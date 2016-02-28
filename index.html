@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE = edge">
+    <meta name="viewport" content="width = device-width,
+         initial-scale = 1">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/react-with-addons.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.0/JSXTransformer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-router/0.13.4/ReactRouter.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <title>github-branch</title>
+    <style>
+        #processing {visibility:hidden}
+        #app {margin:10px}
+    </style>
+</head>
+<body>
+
+<div id="app" class="container-fluid" ></div>
+
+
+<script type="text/jsx">
+var Router = ReactRouter;
+var Route = Router.Route, DefaultRoute = Router.DefaultRoute,
+  Link=Router.Link, RouteHandler = Router.RouteHandler, Redirect = Router.Redirect;
+
+var App = React.createClass({
+  render: function() {
+    return (
+      <div className="row">
+        <div className="col-md-9">
+            <ul className="nav nav-pills">
+                <li className="active"><Link to="create-branch">Create Branch</Link></li>
+            </ul>
+            <RouteHandler key={name}/>
+        </div>
+      </div>
+    );
+  }
+});
+
+var CreateBranchView = React.createClass({
+    handleClick: function() {
+        console.info("click!", $("#branch").val());
+        $("#processing").css('visibility','visible');
+        $.ajax({
+                url: "/api/create_branch/" + $("#branch").val()
+            }).done(function(){
+                console.info("done! ", arguments);
+                $("#processing").css('visibility','hidden');
+            }).error(function(){
+                console.info("error! ", arguments);
+                $("#processing").css('visibility','hidden');
+            }).success(function(){
+                console.info("success! ", arguments);
+                $("#processing").css('visibility','hidden');
+            });
+    },
+    render: function() {
+        return (
+          <form>
+              <div>
+                  <img src="/images/gears.svg" id="processing" />
+              </div>
+              <div className="form-group">
+                <label for="branch">Branch</label>
+                <input type="text" className="form-control" id="branch" />
+              </div>
+              <button onClick={this.handleClick}  className="btn btn-default">Create</button>
+          </form>
+        );
+    }
+});
+
+var View2 = React.createClass({
+    render: function() {
+        return (
+          <div>View 2 content</div>
+        );
+    }
+});
+
+var routes = (
+  <Route name="app" path="/" handler={App}>
+    <Route name="create-branch" handler={CreateBranchView}/>
+    <Route name="view2" handler={View2}/>
+    <Redirect from="/" to="create-branch" />
+  </Route>
+);
+
+Router.run(routes, function (Handler) {
+  React.render(<Handler/>, document.getElementById('app'));
+});
+
+</script>
+</body>
+</html>

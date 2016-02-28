@@ -188,7 +188,7 @@ func main() {
 	http.Handle("/githuboa_cb", handlers.GithubLoginHandler{})
 	http.Handle("/api/create_branch/", handlers.CreateBranchHandler{})
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
-	fmt.Print("Started running on http://localhost:8080\n")
-	fmt.Println(http.ListenAndServe(":8080", nil))
+	fmt.Print("Started running on https://localhost:4430\n")
+	fmt.Println(http.ListenAndServeTLS(":4430", "keys/server.pem", "keys/server.key", nil))
 
 }

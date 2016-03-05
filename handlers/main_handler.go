@@ -17,5 +17,8 @@ func (h MainHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//client := sess.Get("*github.client")
 	user := sess.Get("user")
 	t, _ := template.ParseFiles(h.File)
-	t.Execute(w, user)
+	m := make(map[string]interface{})
+	m["user"] = user
+	m["request"] = r;
+	t.Execute(w, m)
 }

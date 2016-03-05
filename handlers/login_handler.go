@@ -34,7 +34,7 @@ func (h GithubLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	oauthClient := oauthConf.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)
 	user, _, err := client.Users.Get("")
-	if err != nil{
+	if err != nil {
 		panic(err)
 	}
 	sess.Set("user", user)

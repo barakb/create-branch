@@ -3,3 +3,5 @@
 run.sh
 *.pem
 *.key
+lib
+node_modules

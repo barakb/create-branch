@@ -1,3 +1,5 @@
+import { createBranchRequest } from "./actions";
+
 export const CreateBranch = ({name, onClick}) => {
          let input;
          return (
@@ -14,5 +16,28 @@ export const CreateBranch = ({name, onClick}) => {
               </form>
           )
 }
+
+
+//const PropTypes = React.PropTypes;
+//CreateBranch.propTypes = {
+//  onClick: PropTypes.func.isRequired,
+//  name: PropTypes.string.isRequired
+//};
+
+const { Component }  = React;
+
+export class CreateBranchContainer extends Component{
+
+  render() {
+    const props = this.props;
+    const { store } = this.context;
+    return ( <CreateBranch name={ store.getState().createBranch.name } onClick = { branch => store.dispatch(createBranchRequest(branch)) } /> );
+  }
+};
+
+CreateBranchContainer.contextTypes = {
+    store : React.PropTypes.object
+};
+
 
 

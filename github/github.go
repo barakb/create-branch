@@ -153,3 +153,40 @@ func ListRefs(client *github.Client, owner string, repo string) ([]github.Refere
 	//refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type:"heads"});
 	return refs, err;
 }
+
+type RefList struct {
+
+}
+
+func ListAllRefs(client *github.Client) (*RefList, error){
+	repos := createReposFromNames(reposNames)
+	resChan := make(chan []github.Reference, len(repos))
+	var wg sync.WaitGroup
+	for _, repo := range repos{
+		wg.Add(1)
+		go func(repo *Repo){
+			defer  wg.Done()
+			heads, err := ListRefs(client, repo.owner, repo.repo)
+			if err == nil{
+				resChan <- heads
+			}else{
+				fmt.Printf("List all ref error: %#v, on repo %#v\n", err, repo)
+			}
+		}(repo)
+	}
+	go func() {
+		wg.Wait()
+		close(resChan)
+	}()
+
+	for {
+		select {
+		case refs, ok := <-resChan:
+			if !ok {
+				return nil, nil
+			}
+			fmt.Printf("got refs %#v\n", refs)
+		}
+	}
+
+}

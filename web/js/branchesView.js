@@ -30,10 +30,6 @@ export const BranchesTable = ({ filtered, onRemove }) => {
     );
 }
 
-BranchesTable.propTypes = {
-  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired})),
-  onRemove: PropTypes.func.isRequired
-};
 
 export const SearchBar = ({ filterText, handleUserInput }) => {
     let input;
@@ -45,12 +41,6 @@ export const SearchBar = ({ filterText, handleUserInput }) => {
       </form>
     );
 }
-SearchBar.propTypes = {
-  handleUserInput: PropTypes.func.isRequired,
-  filterText: PropTypes.string.isRequired
-};
-
-
 
 export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove }) => {
     return (

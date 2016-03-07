@@ -1,6 +1,6 @@
 import { createBranchRequest } from "./actions";
 
-export const CreateBranch = ({ name, onClick }) => {
+export const CreateBranch = ({ name, onClick, isFetching }) => {
          let input;
          return (
               <form className="form-inline">
@@ -11,7 +11,7 @@ export const CreateBranch = ({ name, onClick }) => {
                     <button type='button' onClick={() => onClick(input.value)} className="btn btn-default form-control">Create</button>
                   </div>
                   <div className="form-group">
-                    <img src="/web/images/gears.svg" id="processing" className="form-control" />
+                    {isFetching ? <img src="/web/images/gears.svg" className="form-control" /> : null}
                   </div>
               </form>
           )
@@ -21,14 +21,16 @@ export const CreateBranch = ({ name, onClick }) => {
 const PropTypes = React.PropTypes;
 CreateBranch.propTypes = {
   onClick: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  isFetching: PropTypes.bool.isRequired
 };
 
 const { Component } = React;
 
 const mapStateToProps = (state) => {
     return {
-        name : state.createBranch.name
+        name : state.createBranch.name,
+        isFetching : state.createBranch.isFetching
     }
 }
 

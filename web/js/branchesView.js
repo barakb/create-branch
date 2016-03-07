@@ -1,24 +1,28 @@
 const PropTypes = React.PropTypes;
-import { updateBranchesFilterRequest } from "./actions";
+import { updateBranchesFilterRequest, deleteBranchRequest } from "./actions";
 
-export const BranchRow = ({ name, quantity }) => {
+export const BranchRow = ({ name, quantity, onRemove, isDeleting}) => {
+         let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
+         <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>
          return (
               <tr key={name}>
                 <td>{name}</td>
                 <td>{quantity}</td>
+                <td>{btn}</td>
               </tr>
           )
 }
 
 
-export const BranchesTable = ({ filtered }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name}  quantity={branch.quantity} key={branch.name}/>);
+export const BranchesTable = ({ filtered, onRemove }) => {
+    let rows = filtered.map((branch) => <BranchRow name={branch.name}  quantity={branch.quantity} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}/>);
     return (
       <table className="table table-hover table-responsive">
         <thead>
           <tr>
             <th>Branch</th>
             <th>Quantity</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>{rows}</tbody>
@@ -27,7 +31,8 @@ export const BranchesTable = ({ filtered }) => {
 }
 
 BranchesTable.propTypes = {
-  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired}))
+  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired})),
+  onRemove: PropTypes.func.isRequired
 };
 
 export const SearchBar = ({ filterText, handleUserInput }) => {
@@ -47,11 +52,11 @@ SearchBar.propTypes = {
 
 
 
-export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput }) => {
+export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove }) => {
     return (
       <div>
          <SearchBar filterText={filterText} handleUserInput={handleUserInput}/>
-         <BranchesTable filtered={filtered} />
+         <BranchesTable filtered={filtered}  onRemove={onRemove}/>
       </div>
     );
 }
@@ -59,7 +64,8 @@ export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput 
 FilterableBranchesTable.propTypes = {
   handleUserInput: PropTypes.func.isRequired,
   filterText: PropTypes.string.isRequired,
-  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired}))
+  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired})),
+  onRemove: PropTypes.func.isRequired
 };
 
 
@@ -74,7 +80,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        handleUserInput : (text) =>  { dispatch(updateBranchesFilterRequest(text)) }
+        handleUserInput : (text) =>  { dispatch(updateBranchesFilterRequest(text)) },
+        onRemove : (name) =>  { dispatch(deleteBranchRequest(name)) }
     }
 }
 

@@ -28,7 +28,7 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	select {
 	case <-done:
 	}
-	created := gh.UIBranch{Name:branchName, Quantity:int(*counter)}
+	created := gh.UIBranch{Name: branchName, Quantity: int(*counter)}
 	js, err := json.Marshal(created)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

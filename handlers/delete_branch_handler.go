@@ -24,7 +24,7 @@ func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	client := sess.Get("*github.client").(*github.Client)
 	gh.DeleteBranch(branchName, client)
-	deleted := gh.UIBranch{branchName, 0}
+	deleted := gh.UIBranch{Name: branchName, Quantity: 0}
 	js, err := json.Marshal(deleted)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

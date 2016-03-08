@@ -228,5 +228,4 @@ func collectBranches(c chan []github.Reference) map[string]*UIBranch {
 
 		}
 	}
-	return res
 }

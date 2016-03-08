@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/barakb/github-branch/session"
+	"github.com/barakb/create-branch/session"
 	"net/http"
-	gh "github.com/barakb/github-branch/github"
+	gh "github.com/barakb/create-branch/github"
 	"github.com/google/go-github/github"
 )
 

@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/barakb/github-branch/session"
+	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"net/http"

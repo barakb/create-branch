@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"github.com/barakb/github-branch/session"
 	"html/template"
 	"net/http"
+	"github.com/barakb/create-branch/session"
 )
 
 type MainHandler struct {

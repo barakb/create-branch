@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/barakb/github-branch/session"
-	gh "github.com/barakb/github-branch/github"
+	"github.com/barakb/create-branch/session"
+	gh "github.com/barakb/create-branch/github"
 	"github.com/google/go-github/github"
 	"net/http"
 	"encoding/json"

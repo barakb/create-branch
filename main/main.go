@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/barakb/github-branch/handlers"
-	"github.com/barakb/github-branch/session"
 	"net/http"
 	"golang.org/x/net/websocket"
 	"flag"
@@ -11,7 +9,9 @@ import (
 	"os"
 	"io/ioutil"
 	"regexp"
-	gh "github.com/barakb/github-branch/github"
+	gh "github.com/barakb/create-branch/github"
+	"github.com/barakb/create-branch/session"
+	"github.com/barakb/create-branch/handlers"
 )
 
 func init() {

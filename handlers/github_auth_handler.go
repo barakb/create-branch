@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/barakb/github-branch/session"
+	"github.com/barakb/create-branch/session"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 	"net/http"

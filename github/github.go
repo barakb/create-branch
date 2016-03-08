@@ -8,7 +8,7 @@ import (
 "sync/atomic"
 )
 
-var reposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
+var ReposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
 	"CloudifySource/Cloudify-iTests",
 	"GigaSpaces-QA/devops",
 	"Gigaspaces/xap-ui-desktop",
@@ -40,7 +40,6 @@ var reposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
 	"GigaSpaces/xap-ui-web",
 	"GigaSpaces/xap"}
 
-//var reposNames = []string{"barakb/foo"}
 
 type Repo struct {
 	owner string
@@ -53,10 +52,12 @@ func (repo Repo) String() string {
 }
 
 func createReposFromNames(names []string) []*Repo {
-	ret := make([]*Repo, len(names))
-	for index, name := range names {
-		components := strings.Split(name, "/")
-		ret[index] = &Repo{owner: components[0], repo: components[1]}
+	ret := make([]*Repo, 0)
+	for _, name := range names {
+		if strings.TrimSpace(name) != "" && strings.Contains(name, "/"){
+			components := strings.Split(name, "/")
+			ret = append(ret, &Repo{owner: components[0], repo: components[1]})
+		}
 	}
 	return ret
 }
@@ -137,7 +138,7 @@ func deleteBranches(repos []*Repo, branch string, client *github.Client) chan st
 }
 
 func DeleteBranch(branch string, client *github.Client) {
-	repos := createReposFromNames(reposNames)
+	repos := createReposFromNames(ReposNames)
 	done := deleteBranches(repos, branch, client)
 
 	select {
@@ -146,7 +147,7 @@ func DeleteBranch(branch string, client *github.Client) {
 }
 
 func CreateBranch(branch string, client *github.Client) (chan *Repo, chan struct{}, *int32) {
-	repos := createReposFromNames(reposNames)
+	repos := createReposFromNames(ReposNames)
 	fillTipSha(repos, client).Wait()
 
 	res, done, counter := createBranches(repos, branch, client)
@@ -175,7 +176,7 @@ type UIBranch struct {
 }
 
 func ListAllRefs(client *github.Client) ([]*UIBranch, error) {
-	repos := createReposFromNames(reposNames)
+	repos := createReposFromNames(ReposNames)
 	resChan := make(chan []github.Reference, len(repos))
 	var wg sync.WaitGroup
 	for _, repo := range repos {
@@ -205,7 +206,6 @@ func toSlice(m map[string]*UIBranch) []*UIBranch {
 	for _, uiBranch := range m {
 		res[index] = uiBranch
 		index += 1
-		fmt.Printf("UIBranch: %#v\n", uiBranch)
 	}
 	return res
 }
@@ -226,7 +226,6 @@ func collectBranches(c chan []github.Reference) map[string]*UIBranch {
 					res[name] = uiBranch
 				}
 				uiBranch.Quantity += 1
-				fmt.Printf("found %q\n", name)
 			}
 
 		}

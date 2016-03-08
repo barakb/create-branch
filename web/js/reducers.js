@@ -26,18 +26,22 @@ function viewBranch (state = viewBranchesInitialState , action) {
            return s;
       case DELETE_BRANCH_REQUEST:
            let branches = state.branches.map(b => b.name === action.name ? { ...b, isDeleting:true} : b)
+           branches.sort((b1, b2) => b1.name > b2.name);
            let filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case DELETE_BRANCH_RESPONSE:
            branches = state.branches.map(b => b.name === action.name ? {...b, isDeleting:false} : b)
+           branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case BRANCH_ADDED:
            branches = [ ...state.branches, {name:action.name, quantity:action.quantity}];
+           branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case BRANCH_DELETED:
            branches = state.branches.filter(b => b.name !== action.name)
+           branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
        default:

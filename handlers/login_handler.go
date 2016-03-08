@@ -13,7 +13,6 @@ type GithubLoginHandler struct {
 
 func (h GithubLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess := session.GlobalSessions.SessionStart(w, r)
-	fmt.Println("GithubLoginHandler")
 	state := r.FormValue("state")
 
 	if state != oauthStateString {
@@ -42,22 +41,10 @@ func (h GithubLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess.Set("token", token)
 	redirect := sess.Get("redirect")
 	if redirect != nil && redirect != "" {
-		fmt.Printf("Redirect to %v\n", redirect)
 		sess.Delete("redirect")
 		http.Redirect(w, r, redirect.(string), http.StatusTemporaryRedirect)
 	} else {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	}
-
-	fmt.Printf("user is %v\n", user)
-
-	//user, _, err := client.Users.Get("")
-	//if err != nil {
-	//	fmt.Printf("client.Users.Get() failed with '%s'\n", err)
-	//	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	//	return
-	//}
-	//buf := []string{"GitHub login id: ", *user.Login, "| GitHub email id: ", *user.Email}
-	//userInfoTemplate.Execute(w, buf)
 
 }

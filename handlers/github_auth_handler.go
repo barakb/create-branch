@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/barakb/github-branch/session"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
@@ -25,12 +24,9 @@ type GithubAuthHandler struct {
 }
 
 func (h GithubAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("GithubAuthHandler\n")
 	sess := session.GlobalSessions.SessionStart(w, r)
 	client := sess.Get("*github.client")
 	if client == nil {
-		fmt.Printf("sess is %#v\n", sess)
-		fmt.Printf("r.RequestURI is %#v\n", r.RequestURI)
 		sess.Set("redirect", r.RequestURI)
 		url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)

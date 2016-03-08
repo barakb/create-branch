@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/barakb/github-branch/session"
 	"html/template"
 	"net/http"
@@ -12,7 +11,6 @@ type MainHandler struct {
 }
 
 func (h MainHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MainHandler")
 	sess := session.GlobalSessions.SessionStart(w, r)
 	//client := sess.Get("*github.client")
 	user := sess.Get("user")

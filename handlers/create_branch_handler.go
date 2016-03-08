@@ -15,7 +15,6 @@ type CreateBranchHandler struct {
 
 func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess := session.GlobalSessions.SessionStart(w, r)
-	fmt.Printf("uri is: %s\n", r.RequestURI)
 	branchName := strings.Trim(strings.Replace(r.RequestURI, "/api/create_branch/", "", 1), "/")
 	if strings.Contains(branchName, "/") {
 		fmt.Printf("CreateBranchHandler: wrong request: %q\n", r.RequestURI)

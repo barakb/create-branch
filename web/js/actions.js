@@ -3,20 +3,33 @@ import { CREATE_BRANCH_REQUEST, UPDATE_BRANCHES_FILTER, DELETE_BRANCH_REQUEST, B
 
 
 export function updateBranchesFilterRequest(filterText) {
-    console.info("updateBranchesFilterRequest", filterText)
+//    console.info("updateBranchesFilterRequest", filterText)
     return {type:UPDATE_BRANCHES_FILTER, filterText};
 }
 
 export function deleteBranchRequest(name) {
-    console.info("deleteBranchRequest", name);
+//    console.info("deleteBranchRequest", name);
     return function(dispatch){
+        if (!name){
+            return
+        }
         dispatch({type:DELETE_BRANCH_REQUEST, name});
-        setTimeout(() => dispatch(deleteBranchResponse(name, null)), 1000)
+        fetch('/api/delete_branch/' + name, {
+                    method: 'delete',
+                    credentials: 'same-origin',
+                    cache: 'no-cache'
+                }).then(function(response) {
+                    return response.json()
+                }).then(function(branch){
+                    dispatch(deleteBranchResponse(name, null))
+                }).catch(function(err) {
+                    console.info("err is ", err)
+                });
     }
 }
 
 export function deleteBranchResponse(name, err){
-    console.info("deleteBranchResponse", name, err)
+//    console.info("deleteBranchResponse", name, err)
     return function(dispatch){
         dispatch({type:DELETE_BRANCH_RESPONSE, name, err:err});
         if(!err){
@@ -26,25 +39,39 @@ export function deleteBranchResponse(name, err){
 }
 
 export function branchAdded(name, quantity) {
-    console.info("branchAdded", name, quantity)
+//    console.info("branchAdded", name, quantity)
     return {type:BRANCH_ADDED, name, quantity};
 }
 
 export function branchDeleted(name) {
-    console.info("branchAdded", name)
+//    console.info("branchAdded", name)
     return {type:BRANCH_DELETED, name};
 }
 
 export function createBranchRequest(name) {
-    console.info("createBranchRequest", name)
+//    console.info("createBranchRequest", name)
     return function(dispatch){
-        dispatch({type:CREATE_BRANCH_REQUEST, name});
-        setTimeout(() => dispatch(createBranchResponse(name, 1, null)), 1000)
+        if (!name){
+            return
+        }
+        const branchName = document.currentLoginName + "_" + name;
+        dispatch({type:CREATE_BRANCH_REQUEST, branchName});
+        fetch('/api/create_branch/' + branchName, {
+            method: 'get',
+            credentials: 'same-origin',
+            cache: 'no-cache'
+        }).then(function(response) {
+            return response.json()
+        }).then(function(branch){
+            dispatch(createBranchResponse(branch.name, branch.quantity, null))
+        }).catch(function(err) {
+            console.info("err is ", err)
+        });
     }
 }
 
 export function createBranchResponse(name, quantity, err) {
-    console.info("createBranchResponse", name, quantity)
+//    console.info("createBranchResponse", name, quantity)
     return function(dispatch){
         dispatch({type:CREATE_BRANCH_RESPONSE, name, quantity, err:err});
         if(!err){

@@ -2,21 +2,19 @@ import { createBranchRequest } from "./actions";
 
 export const CreateBranch = ({ name, onClick, isFetching }) => {
          let input;
-         let btn = isFetching ? <button type='submit'  className="btn btn-default form-control disabled">Create</button> :
-         <button type='submit' onClick={() => onClick(input.value)} className="btn btn-default form-control">Create</button>
+         let btn = isFetching ? <button type="submit" className="btn btn-default disabled">Create</button> :
+            <button type="submit" className="btn btn-default" onClick={() => onClick(input.value)}>Create</button>
 
          return (
-              <form className="form-inline" onSubmit={ev => ev.preventDefault() }>
-                  <div className="form-group">
-                    <input type="text" className="form-control" placeholder="Branch Name" ref={node => {input = node}}  defaultValue={name} />
-                  </div>
-                  <div className="form-group">
-                    {btn}
-                  </div>
+             <form className="navbar-form navbar-left" role="search" onSubmit={ev => ev.preventDefault() } >
+                 <div className="form-group">
+                     <input type="text" className="form-control" placeholder="New Branch" ref={node => {input = node}}  defaultValue={name} />
+                 </div>
+                 {btn}
                   <div className="form-group">
                     {isFetching ? <img src="/web/images/gears.svg" className="form-control" /> : null}
                   </div>
-              </form>
+             </form>
           )
 }
 

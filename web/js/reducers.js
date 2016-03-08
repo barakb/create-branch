@@ -15,9 +15,6 @@ function createBranch (state = createBranchInitialState , action) {
 }
 
 const branches = [
-                {"name": 'foo', "quantity":3},
-                {"name": 'foo1', "quantity":2},
-                {"name": 'foo2', "quantity":1},
              ];
 
 const viewBranchesInitialState = {filterText:'', branches, filtered : []};

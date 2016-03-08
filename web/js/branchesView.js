@@ -17,7 +17,7 @@ export const BranchRow = ({ name, quantity, onRemove, isDeleting}) => {
 export const BranchesTable = ({ filtered, onRemove }) => {
     let rows = filtered.map((branch) => <BranchRow name={branch.name}  quantity={branch.quantity} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}/>);
     return (
-      <table className="table table-hover table-responsive">
+      <table className="table table-hover table-condensed table-responsive">
         <thead>
           <tr>
             <th>Branch</th>
@@ -36,7 +36,7 @@ export const SearchBar = ({ filterText, handleUserInput }) => {
     return (
       <form className="form-inline">
         <div className="form-group">
-           <input type="text" placeholder="Search..." value={filterText}  ref={node => {input = node}} onChange={() => handleUserInput(input.value)} className="form-control"/>
+           <input type="text" placeholder="Filter..." value={filterText}  ref={node => {input = node}} onChange={() => handleUserInput(input.value)} className="form-control"/>
         </div>
       </form>
     );

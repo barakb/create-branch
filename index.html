@@ -10,13 +10,22 @@
 
     <title>github-branch</title>
     <style>
-        #app {margin:10px}
+        #listBranches {margin:30px}
     </style>
 </head>
 <body>
 
-<div id="app" ></div>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div id="createBranch" class="navbar-header"></div>
 
+        <a class="navbar-brand nav navbar-nav navbar-right" href="#">
+            <img alt="Brand" height="20" width="20" src="{{.user.AvatarURL}}">
+        </a>
+
+    </div>
+</nav>
+<div id="listBranches" ></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
@@ -54,6 +63,7 @@
             var msg = document.getElementById('message').value;
             sock.send(msg);
         };
+        document.currentLoginName = {{.user.Login}}
     </script>
 </body>
 </html>

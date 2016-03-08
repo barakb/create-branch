@@ -1,4 +1,4 @@
-import { createBranchRequest } from "./actions"
+import { createBranchRequest, branchAdded } from "./actions"
 import { CreateBranch, CreateBranchContainer } from "./createBranch";
 import { FilterableBranchesTableComponent } from "./branchesView";
 import { rootReducer } from "./reducers";
@@ -12,10 +12,35 @@ export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 ReactDOM.render(
    <Provider store={store}>
-      <div>
-        <CreateBranchContainer />
-        <hr/>
         <FilterableBranchesTableComponent />
-      </div>
-   </Provider>, document.getElementById('app')
+   </Provider>, document.getElementById('listBranches')
 );
+
+ReactDOM.render(
+   <Provider store={store}>
+      <CreateBranchContainer />
+   </Provider>, document.getElementById('createBranch')
+);
+
+
+
+const loadBranches = () => {
+    fetch('api/get_branches/', {
+    	method: 'get',
+    	credentials: 'same-origin',
+    	cache: 'no-cache'
+    }).then(function(response) {
+        return response.json()
+    }).then(function(branches){
+        branches.forEach(b => {
+            if(!b.name.startsWith(document.currentLoginName + "_")){
+                return;
+            }
+            store.dispatch(branchAdded(b.name, b.quantity));
+        });
+    }).catch(function(err) {
+        console.info("err is ", err)
+    });
+}
+
+loadBranches();

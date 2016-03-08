@@ -56,6 +56,7 @@ func main() {
 	http.Handle("/logout", handlers.MustAuth(handlers.LogoutHandler{}))
 	http.Handle("/githuboa_cb", handlers.GithubLoginHandler{})
 	http.Handle("/api/create_branch/", handlers.MustAuth(handlers.CreateBranchHandler{}))
+	http.Handle("/api/delete_branch/", handlers.MustAuth(handlers.DeleteBranchHandler{}))
 	http.Handle("/api/get_branches/", handlers.MustAuth(handlers.GetBranchsHandler{}))
 	http.Handle("/web/", handlers.MustAuth(http.StripPrefix("/web/", http.FileServer(http.Dir("web")))))
 	fmt.Print("Started running on https://localhost:4430\n")

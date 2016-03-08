@@ -7,6 +7,7 @@ import (
 	"github.com/google/go-github/github"
 	"net/http"
 	"strings"
+	"encoding/json"
 )
 
 type CreateBranchHandler struct {
@@ -24,12 +25,16 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := sess.Get("*github.client").(*github.Client)
-	_, done := gh.CreateBranch(branchName, client)
+	_, done, counter := gh.CreateBranch(branchName, client)
 	select{
 		case <- done:
 	}
-
-	w.WriteHeader(http.StatusOK)
-	//"/api/create_branch/dfsdafdsa"
-
+	created := gh.UIBranch{branchName, int(*counter)}
+	js, err := json.Marshal(created)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(js)
 }

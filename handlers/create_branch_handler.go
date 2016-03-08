@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/barakb/create-branch/session"
 	gh "github.com/barakb/create-branch/github"
+	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
 	"net/http"
 	"strings"
-	"encoding/json"
 )
 
 type CreateBranchHandler struct {
@@ -25,10 +25,10 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	client := sess.Get("*github.client").(*github.Client)
 	_, done, counter := gh.CreateBranch(branchName, client)
-	select{
-		case <- done:
+	select {
+	case <-done:
 	}
-	created := gh.UIBranch{branchName, int(*counter)}
+	created := gh.UIBranch{Name:branchName, Quantity:int(*counter)}
 	js, err := json.Marshal(created)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"golang.org/x/net/websocket"
 	"flag"
-	"github.com/vharitonsky/iniflags"
-	"os"
-	"io/ioutil"
-	"regexp"
+	"fmt"
 	gh "github.com/barakb/create-branch/github"
-	"github.com/barakb/create-branch/session"
 	"github.com/barakb/create-branch/handlers"
+	"github.com/barakb/create-branch/session"
+	"github.com/vharitonsky/iniflags"
+	"golang.org/x/net/websocket"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"regexp"
 )
 
 func init() {
@@ -30,7 +30,7 @@ var repos = flag.String("repos", defaultRepoFile(), "Configure the where the rep
 func main() {
 	iniflags.Parse()
 	repos, err := readRepos(*repos)
-	if err != nil{
+	if err != nil {
 		fmt.Printf("Error:%s\n", err.Error())
 		return
 	}
@@ -48,17 +48,17 @@ func main() {
 	fmt.Println(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port), "keys/server.pem", "keys/server.key", nil))
 }
 
-func defaultRepoFile() string{
+func defaultRepoFile() string {
 	dir, err := os.Getwd()
-	if err != nil{
+	if err != nil {
 		return "repos.txt"
 	}
 	return fmt.Sprintf("%s/repos.txt", dir)
 }
 
-func readRepos(repos string) ([]string, error){
+func readRepos(repos string) ([]string, error) {
 	bytes, err := ioutil.ReadFile(repos)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	str := string(bytes)

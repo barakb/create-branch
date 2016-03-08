@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/barakb/create-branch/session"
 	gh "github.com/barakb/create-branch/github"
+	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
 	"net/http"
 	"strings"
-	"encoding/json"
 )
 
 type DeleteBranchHandler struct {
@@ -17,7 +17,7 @@ func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess := session.GlobalSessions.SessionStart(w, r)
 	branchName := strings.Trim(strings.Replace(r.RequestURI, "/api/delete_branch/", "", 1), "/")
 	if strings.Contains(branchName, "/") || r.Method != "DELETE" {
-		fmt.Printf("DeleteBranchHandler: wrong request: %s %q\n",r.Method, r.RequestURI)
+		fmt.Printf("DeleteBranchHandler: wrong request: %s %q\n", r.Method, r.RequestURI)
 		http.Error(w, fmt.Sprintf("DeleteBranchHandler: wrong request: %s %q\n", r.Method, r.RequestURI), http.StatusInternalServerError)
 		return
 	}

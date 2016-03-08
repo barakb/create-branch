@@ -1,6 +1,6 @@
 package handlers
 
-import(
+import (
 	"golang.org/x/net/websocket"
 	"io"
 )

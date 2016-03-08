@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/barakb/create-branch/session"
-	"net/http"
 	gh "github.com/barakb/create-branch/github"
+	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
+	"net/http"
 )
 
 type LogoutHandler struct {
@@ -21,9 +21,9 @@ func (h LogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 	var refs []github.Reference
 	refs, err := gh.ListRefs(client, "GigaSpaces", "xap")
-	if err != nil{
+	if err != nil {
 		fmt.Printf("failed to get heads, error is:%#v\n", err)
-	}else{
+	} else {
 		for _, ref := range refs {
 			fmt.Printf("ref:%s, url:%s, type:%s \n", *ref.Ref, *ref.URL, *ref.Object.Type)
 		}

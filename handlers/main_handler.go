@@ -1,9 +1,9 @@
 package handlers
 
 import (
+	"github.com/barakb/create-branch/session"
 	"html/template"
 	"net/http"
-	"github.com/barakb/create-branch/session"
 )
 
 type MainHandler struct {
@@ -17,6 +17,6 @@ func (h MainHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t, _ := template.ParseFiles(h.File)
 	m := make(map[string]interface{})
 	m["user"] = user
-	m["request"] = r;
+	m["request"] = r
 	t.Execute(w, m)
 }

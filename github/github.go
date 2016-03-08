@@ -5,7 +5,7 @@ import (
 	"github.com/google/go-github/github"
 	"strings"
 	"sync"
-"sync/atomic"
+	"sync/atomic"
 )
 
 var ReposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
@@ -40,7 +40,6 @@ var ReposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
 	"GigaSpaces/xap-ui-web",
 	"GigaSpaces/xap"}
 
-
 type Repo struct {
 	owner string
 	repo  string
@@ -54,7 +53,7 @@ func (repo Repo) String() string {
 func createReposFromNames(names []string) []*Repo {
 	ret := make([]*Repo, 0)
 	for _, name := range names {
-		if strings.TrimSpace(name) != "" && strings.Contains(name, "/"){
+		if strings.TrimSpace(name) != "" && strings.Contains(name, "/") {
 			components := strings.Split(name, "/")
 			ret = append(ret, &Repo{owner: components[0], repo: components[1]})
 		}
@@ -99,7 +98,7 @@ func createBranches(repos []*Repo, branch string, client *github.Client) (chan *
 			})
 			if err != nil {
 				fmt.Printf("error createing branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
-			}else {
+			} else {
 				fmt.Printf("branch %s created in repo %#v\n", branch, repo)
 				atomic.AddInt32(&counter, 1)
 			}
@@ -122,10 +121,10 @@ func deleteBranches(repos []*Repo, branch string, client *github.Client) chan st
 		go func(repo *Repo) {
 			defer wg.Done()
 
-			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/" + branch)
+			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/"+branch)
 			if err != nil {
 				fmt.Printf("error deleting branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
-			}else {
+			} else {
 				fmt.Printf("branch %s deleted from repo %#v\n", branch, repo)
 			}
 		}(repo)
@@ -161,18 +160,17 @@ func CreateBranch(branch string, client *github.Client) (chan *Repo, chan struct
 }
 
 func ListRefs(client *github.Client, owner string, repo string) ([]github.Reference, error) {
-	refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type:"heads/"});
+	refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type: "heads/"})
 	//refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type:"heads"});
-	return refs, err;
+	return refs, err
 }
 
 type RefList struct {
-
 }
 
 type UIBranch struct {
 	Name     string `json:"name"`
-	Quantity int `json:"quantity"`
+	Quantity int    `json:"quantity"`
 }
 
 func ListAllRefs(client *github.Client) ([]*UIBranch, error) {
@@ -186,7 +184,7 @@ func ListAllRefs(client *github.Client) ([]*UIBranch, error) {
 			heads, err := ListRefs(client, repo.owner, repo.repo)
 			if err == nil {
 				resChan <- heads
-			}else {
+			} else {
 				fmt.Printf("List all ref error: %#v, on repo %#v\n", err, repo)
 			}
 		}(repo)
@@ -197,12 +195,12 @@ func ListAllRefs(client *github.Client) ([]*UIBranch, error) {
 	}()
 
 	branchesMap := collectBranches(resChan)
-	return toSlice(branchesMap), nil;
+	return toSlice(branchesMap), nil
 }
 
 func toSlice(m map[string]*UIBranch) []*UIBranch {
 	res := make([]*UIBranch, len(m))
-	var index = 0;
+	var index = 0
 	for _, uiBranch := range m {
 		res[index] = uiBranch
 		index += 1
@@ -222,7 +220,7 @@ func collectBranches(c chan []github.Reference) map[string]*UIBranch {
 				name := strings.TrimPrefix(*ref.Ref, "refs/heads/")
 				uiBranch, found := res[name]
 				if !found {
-					uiBranch = &UIBranch{Name:name, Quantity:0}
+					uiBranch = &UIBranch{Name: name, Quantity: 0}
 					res[name] = uiBranch
 				}
 				uiBranch.Quantity += 1

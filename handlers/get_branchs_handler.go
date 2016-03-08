@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/barakb/create-branch/session"
+	"encoding/json"
 	gh "github.com/barakb/create-branch/github"
+	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
 	"net/http"
-	"encoding/json"
 )
 
 type GetBranchsHandler struct {

@@ -24,7 +24,7 @@ func (p memoryProvider) getSessionCreated(sid string) (Session, error) {
 	res, ok := p.sessions[sid]
 	if !ok {
 		time := time.Now()
-		res = memorySession{m:make(map[interface{}]interface{}), sid:sid, lmt:&time}
+		res = memorySession{m: make(map[interface{}]interface{}), sid: sid, lmt: &time}
 		p.sessions[sid] = res
 	}
 	res.touch()
@@ -37,8 +37,8 @@ func (p memoryProvider) SessionDestroy(sid string) error {
 }
 
 func (p memoryProvider) SessionGC(maxLifeTime int64) {
-	for key, session := range p.sessions{
-		if session.lmt.Add(30 * time.Minute).Before(time.Now()){
+	for key, session := range p.sessions {
+		if session.lmt.Add(30 * time.Minute).Before(time.Now()) {
 			delete(p.sessions, key)
 		}
 	}

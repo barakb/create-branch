@@ -5,3 +5,4 @@ run.sh
 *.key
 lib
 node_modules
+docker/run.sh

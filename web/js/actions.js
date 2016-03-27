@@ -74,7 +74,7 @@ export function createBranchResponse(name, statuses, err) {
     return function(dispatch){
         dispatch({type:CREATE_BRANCH_RESPONSE, name, statuses, err:err});
         if(!err){
-            dispatch(branchAdded(name, Object.keys(statuses)));
+            dispatch(branchAdded(name, Object.keys(statuses).filter(k => statuses[k])));
         }
     }
 }

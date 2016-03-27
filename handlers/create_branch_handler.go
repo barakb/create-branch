@@ -24,11 +24,16 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := sess.Get("*github.client").(*github.Client)
-	_, done, counter := gh.CreateBranch(branchName, client)
-	select {
-	case <-done:
-	}
-	created := gh.UIBranch{Name: branchName, Quantity: int(*counter)}
+
+	progressChan, resChan := gh.CreateBranchsWithProgress(branchName, client)
+
+	go func(){
+		for progress := range progressChan{
+			fmt.Printf("reporting create branch progress %#v\n", progress)
+		}
+	}()
+
+	created := <- resChan
 	js, err := json.Marshal(created)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

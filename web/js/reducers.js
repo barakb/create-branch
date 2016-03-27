@@ -35,7 +35,7 @@ function viewBranch (state = viewBranchesInitialState , action) {
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case BRANCH_ADDED:
-           branches = [ ...state.branches, {name:action.name, quantity:action.quantity}];
+           branches = [ ...state.branches, {name:action.name, repositories:action.repositories}];
            branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };

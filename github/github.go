@@ -5,7 +5,6 @@ import (
 	"github.com/google/go-github/github"
 	"strings"
 	"sync"
-	"sync/atomic"
 )
 
 var ReposNames = []string{"CloudifySource/Cloudify-iTests-webuitf",
@@ -80,16 +79,13 @@ func fillTipSha(repos []*Repo, client *github.Client) *sync.WaitGroup {
 	return &wg
 }
 
-func createBranches(repos []*Repo, branch string, client *github.Client) (chan *Repo, chan struct{}, *int32) {
-	var counter int32
-	var wg sync.WaitGroup
-	reposChan := make(chan *Repo, len(repos))
-	done := make(chan struct{})
-	for _, repo := range repos {
-		wg.Add(1)
-		go func(repo *Repo) {
-			defer wg.Done()
 
+func createBranchesWithProgress(repos []*Repo, branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
+	progressChan = make(chan RepoStatus, len(repos))
+	resChan = make(chan map[string]interface{})
+	intermediateProgressChan := make(chan RepoStatus, len(repos))
+	for _, repo := range repos {
+		go func(repo *Repo) {
 			_, _, err := client.Git.CreateRef(repo.owner, repo.repo, &github.Reference{
 				Ref: github.String("refs/heads/" + branch),
 				Object: &github.GitObject{
@@ -98,65 +94,122 @@ func createBranches(repos []*Repo, branch string, client *github.Client) (chan *
 			})
 			if err != nil {
 				fmt.Printf("error createing branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
+				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: false}
 			} else {
 				fmt.Printf("branch %s created in repo %#v\n", branch, repo)
-				atomic.AddInt32(&counter, 1)
+				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: true}
 			}
-			reposChan <- repo
 		}(repo)
 	}
 	go func() {
-		wg.Wait()
-		close(reposChan)
-		close(done)
+		var statuses map[string]interface{} = make(map[string]interface{})
+		for range repos {
+			status := <-intermediateProgressChan
+			statuses[status.Name] = status.Success
+			progressChan <- status
+		}
+		resChan <- statuses
+		close(progressChan)
+		close(resChan)
+		close(intermediateProgressChan)
 	}()
-	return reposChan, done, &counter
+	return progressChan, resChan
 }
 
-func deleteBranches(repos []*Repo, branch string, client *github.Client) chan struct{} {
+
+func deleteBranchesWithProgress(repos []*Repo, branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
+	progressChan = make(chan RepoStatus, len(repos))
+	resChan = make(chan map[string]interface{})
+	intermediateProgressChan := make(chan RepoStatus, len(repos))
+	for _, repo := range repos {
+		go func(repo *Repo) {
+			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/" + branch)
+			if err != nil {
+				fmt.Printf("error deleting branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
+				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: false}
+			} else {
+				//fmt.Printf("branch %s deleted from repo %#v\n", branch, repo)
+				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: true}
+			}
+		}(repo)
+	}
+	go func() {
+		var statuses map[string]interface{} = make(map[string]interface{})
+		for range repos {
+			status := <-intermediateProgressChan
+			statuses[status.Name] = status.Success
+			progressChan <- status
+		}
+		resChan <- statuses
+		close(progressChan)
+		close(resChan)
+		close(intermediateProgressChan)
+	}()
+	return progressChan, resChan
+}
+
+type BranchOnRepositories struct {
+	Name     string       `json:"name"`
+	Statuses map[string]bool `json:"statuses"`
+}
+
+func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]bool {
+	type branch struct {
+		repo   string
+		branch string
+	}
+	branches := make(chan branch, 100)
+	repos := createReposFromNames(ReposNames)
 	var wg sync.WaitGroup
-	done := make(chan struct{})
 	for _, repo := range repos {
 		wg.Add(1)
 		go func(repo *Repo) {
-			defer wg.Done()
-
-			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/"+branch)
-			if err != nil {
-				fmt.Printf("error deleting branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
+			defer func() {
+				wg.Done()
+			}()
+			heads, err := ListRefs(client, repo.owner, repo.repo)
+			if err == nil {
+				for _, head := range heads {
+					branchName := strings.TrimPrefix(*head.Ref, "refs/heads/")
+					branches <- branch{repo.repo, branchName}
+				}
 			} else {
-				fmt.Printf("branch %s deleted from repo %#v\n", branch, repo)
+				fmt.Printf("List all ref error: %#v, on repo %#v\n", err, repo)
 			}
 		}(repo)
 	}
+
+	// closer
 	go func() {
 		wg.Wait()
-		close(done)
+		close(branches)
 	}()
-	return done
+
+	var res map[string]map[string]bool = make(map[string]map[string]bool)
+	resChan := make(chan map[string]map[string]bool)
+	go func() {
+		for branch := range branches {
+			if b, ok := res[branch.branch]; ok {
+				b[branch.repo] = true
+			}else {
+				res[branch.branch] = map[string]bool{branch.repo : true}
+			}
+		}
+		resChan <- res
+		close(resChan)
+	}()
+	return resChan
 }
 
-func DeleteBranch(branch string, client *github.Client) {
+func DeleteBranchWithProgress(branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
 	repos := createReposFromNames(ReposNames)
-	done := deleteBranches(repos, branch, client)
-
-	select {
-	case <-done:
-	}
+	return deleteBranchesWithProgress(repos, branch, client)
 }
 
-func CreateBranch(branch string, client *github.Client) (chan *Repo, chan struct{}, *int32) {
+func CreateBranchsWithProgress(branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
 	repos := createReposFromNames(ReposNames)
 	fillTipSha(repos, client).Wait()
-
-	res, done, counter := createBranches(repos, branch, client)
-
-	select {
-	case <-done:
-	}
-
-	//done = deleteBranches(repos, branch, client);
-	return res, done, counter
+	return createBranchesWithProgress(repos, branch, client)
 }
 
 func ListRefs(client *github.Client, owner string, repo string) ([]github.Reference, error) {
@@ -169,63 +222,16 @@ type RefList struct {
 }
 
 type UIBranch struct {
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
+	Name  string       `json:"name"`
+	Repos []RepoStatus `json:"repos"`
 }
 
-func ListAllRefs(client *github.Client) ([]*UIBranch, error) {
-	repos := createReposFromNames(ReposNames)
-	resChan := make(chan []github.Reference, len(repos))
-	var wg sync.WaitGroup
-	for _, repo := range repos {
-		wg.Add(1)
-		go func(repo *Repo) {
-			defer wg.Done()
-			heads, err := ListRefs(client, repo.owner, repo.repo)
-			if err == nil {
-				resChan <- heads
-			} else {
-				fmt.Printf("List all ref error: %#v, on repo %#v\n", err, repo)
-			}
-		}(repo)
-	}
-	go func() {
-		wg.Wait()
-		close(resChan)
-	}()
-
-	branchesMap := collectBranches(resChan)
-	return toSlice(branchesMap), nil
+type RepoStatus struct {
+	Name    string `json:"name"`
+	Success bool   `json:"success"`
 }
 
-func toSlice(m map[string]*UIBranch) []*UIBranch {
-	res := make([]*UIBranch, len(m))
-	var index = 0
-	for _, uiBranch := range m {
-		res[index] = uiBranch
-		index += 1
-	}
-	return res
-}
-
-func collectBranches(c chan []github.Reference) map[string]*UIBranch {
-	res := make(map[string]*UIBranch)
-	for {
-		select {
-		case refs, ok := <-c:
-			if !ok {
-				return res
-			}
-			for _, ref := range refs {
-				name := strings.TrimPrefix(*ref.Ref, "refs/heads/")
-				uiBranch, found := res[name]
-				if !found {
-					uiBranch = &UIBranch{Name: name, Quantity: 0}
-					res[name] = uiBranch
-				}
-				uiBranch.Quantity += 1
-			}
-
-		}
-	}
+type repoWithRefs struct {
+	name string
+	refs []github.Reference
 }

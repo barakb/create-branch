@@ -38,9 +38,9 @@ export function deleteBranchResponse(name, err){
     }
 }
 
-export function branchAdded(name, quantity) {
+export function branchAdded(name, repositories) {
 //    console.info("branchAdded", name, quantity)
-    return {type:BRANCH_ADDED, name, quantity};
+    return {type:BRANCH_ADDED, name, repositories};
 }
 
 export function branchDeleted(name) {
@@ -62,20 +62,19 @@ export function createBranchRequest(name) {
             cache: 'no-cache'
         }).then(function(response) {
             return response.json()
-        }).then(function(branch){
-            dispatch(createBranchResponse(branch.name, branch.quantity, null))
+        }).then(function(statuses){
+            dispatch(createBranchResponse(branchName, statuses, null))
         }).catch(function(err) {
             console.info("err is ", err)
         });
     }
 }
 
-export function createBranchResponse(name, quantity, err) {
-//    console.info("createBranchResponse", name, quantity)
+export function createBranchResponse(name, statuses, err) {
     return function(dispatch){
-        dispatch({type:CREATE_BRANCH_RESPONSE, name, quantity, err:err});
+        dispatch({type:CREATE_BRANCH_RESPONSE, name, statuses, err:err});
         if(!err){
-            dispatch(branchAdded(name, quantity));
+            dispatch(branchAdded(name, Object.keys(statuses)));
         }
     }
 }

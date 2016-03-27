@@ -1,13 +1,14 @@
 const PropTypes = React.PropTypes;
 import { updateBranchesFilterRequest, deleteBranchRequest } from "./actions";
 
-export const BranchRow = ({ name, quantity, onRemove, isDeleting}) => {
+export const BranchRow = ({ name, repositories, onRemove, isDeleting}) => {
+         let s = repositories ? repositories.length : 0;
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
          <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>
          return (
               <tr key={name}>
                 <td>{name}</td>
-                <td>{quantity}</td>
+                <td>{s}</td>
                 <td>{btn}</td>
               </tr>
           )
@@ -15,13 +16,13 @@ export const BranchRow = ({ name, quantity, onRemove, isDeleting}) => {
 
 
 export const BranchesTable = ({ filtered, onRemove }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name}  quantity={branch.quantity} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}/>);
+    let rows = filtered.map((branch) => <BranchRow name={branch.name}  repositories={branch.repositories} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}/>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>
           <tr>
             <th>Branch</th>
-            <th>Quantity</th>
+            <th>Repositories</th>
             <th></th>
           </tr>
         </thead>
@@ -54,7 +55,9 @@ export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput,
 FilterableBranchesTable.propTypes = {
   handleUserInput: PropTypes.func.isRequired,
   filterText: PropTypes.string.isRequired,
-  filtered : PropTypes.arrayOf(PropTypes.shape({name : PropTypes.string.isRequired, quantity : PropTypes.number.isRequired})),
+  filtered : PropTypes.arrayOf(
+       PropTypes.shape({name : PropTypes.string.isRequired,
+                        statuses : PropTypes.arrayOf(PropTypes.shape({name: PropTypes.string.isRequired, success : PropTypes.bool.isRequired}))})),
   onRemove: PropTypes.func.isRequired
 };
 

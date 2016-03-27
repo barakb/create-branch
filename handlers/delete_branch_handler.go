@@ -23,13 +23,21 @@ func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := sess.Get("*github.client").(*github.Client)
-	gh.DeleteBranch(branchName, client)
-	deleted := gh.UIBranch{Name: branchName, Quantity: 0}
-	js, err := json.Marshal(deleted)
+	progressChan, resChan := gh.DeleteBranchWithProgress(branchName, client)
+
+	go func(){
+	    for progress := range progressChan{
+		    fmt.Printf("Reporting progress on deleted branch %#v\n", progress);
+	    }
+	}()
+
+	res := <- resChan
+	js, err := json.Marshal(res)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(js)
+
 }

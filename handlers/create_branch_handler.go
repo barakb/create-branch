@@ -11,6 +11,7 @@ import (
 )
 
 type CreateBranchHandler struct {
+	WS *WebSocketHandler
 }
 
 func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +30,10 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	go func(){
 		for progress := range progressChan{
-			fmt.Printf("reporting create branch progress %#v\n", progress)
+			js, err := json.Marshal(progress)
+			if err == nil{
+				fmt.Fprintf(h.WS.Conn(), "{'type' : 'create-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
+			}
 		}
 	}()
 

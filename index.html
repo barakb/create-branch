@@ -47,7 +47,6 @@
 
             sock.onopen = function() {
                 console.log("connected to " + wsuri);
-                sock.send("foo");
             }
 
             sock.onclose = function(e) {

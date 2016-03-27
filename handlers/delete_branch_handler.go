@@ -11,6 +11,7 @@ import (
 )
 
 type DeleteBranchHandler struct {
+	WS *WebSocketHandler
 }
 
 func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +29,12 @@ func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	go func(){
 	    for progress := range progressChan{
 		    fmt.Printf("Reporting progress on deleted branch %#v\n", progress);
+		    js, err := json.Marshal(progress)
+		    //fmt.Printf("{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
+		    if err == nil{
+			    fmt.Fprintf(h.WS.Conn(), "{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
+		    }
+
 	    }
 	}()
 

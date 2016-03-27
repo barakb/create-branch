@@ -36,13 +36,14 @@ func main() {
 	}
 	gh.ReposNames = repos
 	go session.GlobalSessions.GC()
+	websocketHandler := &handlers.WebSocketHandler{}
 	http.Handle("/", handlers.MustAuth(handlers.MainHandler{File: "index.html"}))
-	http.Handle("/events", handlers.MustAuth(websocket.Handler(handlers.EchoServer)))
+	http.Handle("/events", handlers.MustAuth(websocket.Handler(websocketHandler.Handler)))
 	http.Handle("/logout", handlers.MustAuth(handlers.LogoutHandler{}))
 	http.Handle("/githuboa_cb", handlers.GithubLoginHandler{})
-	http.Handle("/api/create_branch/", handlers.MustAuth(handlers.CreateBranchHandler{}))
-	http.Handle("/api/delete_branch/", handlers.MustAuth(handlers.DeleteBranchHandler{}))
-	http.Handle("/api/get_branches/", handlers.MustAuth(handlers.GetBranchsHandler{}))
+	http.Handle("/api/create_branch/", handlers.MustAuth(handlers.CreateBranchHandler{websocketHandler}))
+	http.Handle("/api/delete_branch/", handlers.MustAuth(handlers.DeleteBranchHandler{websocketHandler}))
+	http.Handle("/api/get_branches/", handlers.MustAuth(handlers.GetBranchsHandler{websocketHandler}))
 	http.Handle("/web/", handlers.MustAuth(http.StripPrefix("/web/", http.FileServer(http.Dir("web")))))
 	fmt.Printf("Server started on https://localhost:%d\n", *port)
 	fmt.Println(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port), "keys/server.pem", "keys/server.key", nil))

@@ -1,5 +1,14 @@
 const { combineReducers } = Redux;
-import { CREATE_BRANCH_REQUEST, CREATE_BRANCH_RESPONSE, UPDATE_BRANCHES_FILTER, DELETE_BRANCH_REQUEST, BRANCH_ADDED, DELETE_BRANCH_RESPONSE, BRANCH_DELETED} from "./actionTypes"
+import { CREATE_BRANCH_REQUEST,
+         CREATE_BRANCH_RESPONSE,
+         UPDATE_BRANCHES_FILTER,
+         DELETE_BRANCH_REQUEST,
+         BRANCH_ADDED,
+         DELETE_BRANCH_RESPONSE,
+         BRANCH_DELETED,
+         FOOBAR_TOGGLE_SHOW_VALUES
+        }
+ from "./actionTypes"
 
 const createBranchInitialState = {name:'', isFetching:false};
 
@@ -49,8 +58,24 @@ function viewBranch (state = viewBranchesInitialState , action) {
    }
 }
 
+const fooBarInitialState = [
+    {"name": "name1", "id": "1", "showValues": false, "values": ["a", "b", "c"]},
+    {"name": "name2", "id": "2", "showValues": false, "values": ["a", "b", "c"]},
+    {"name": "name3", "id": "3", "showValues": false, "values": ["a", "b", "c"]}
+]
+
+function fooBar(state = fooBarInitialState, action) {
+    switch (action.type){
+        case FOOBAR_TOGGLE_SHOW_VALUES:
+            return state.map(c => c.id === action.id ? { ...c, showValues:!c.showValues} : c);
+       default:
+            return state;
+    }
+}
+
 export const rootReducer = combineReducers({
   createBranch,
-  viewBranch
+  viewBranch,
+  fooBar
 })
 

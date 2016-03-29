@@ -1,6 +1,7 @@
 import { createBranchRequest, branchAdded } from "./actions"
 import { CreateBranch, CreateBranchContainer } from "./createBranch";
 import { FilterableBranchesTableComponent } from "./branchesView";
+import { FooBarTableComponent } from "./foobarView";
 import { rootReducer } from "./reducers";
 import { thunkMiddleware as thunk} from './redux-thunk';
 const { createStore, applyMiddleware} = Redux;
@@ -44,3 +45,11 @@ const loadBranches = () => {
 }
 
 loadBranches();
+
+
+
+ReactDOM.render(
+   <Provider store={store}>
+      <FooBarTableComponent />
+   </Provider>, document.getElementById('foobar')
+);

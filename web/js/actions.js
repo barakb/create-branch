@@ -1,4 +1,12 @@
-import { CREATE_BRANCH_REQUEST, UPDATE_BRANCHES_FILTER, DELETE_BRANCH_REQUEST, BRANCH_ADDED, CREATE_BRANCH_RESPONSE, DELETE_BRANCH_RESPONSE, BRANCH_DELETED } from "./actionTypes"
+import { CREATE_BRANCH_REQUEST,
+         UPDATE_BRANCHES_FILTER,
+         DELETE_BRANCH_REQUEST,
+         BRANCH_ADDED,
+         CREATE_BRANCH_RESPONSE,
+         DELETE_BRANCH_RESPONSE,
+         BRANCH_DELETED,
+         FOOBAR_TOGGLE_SHOW_VALUES
+  } from "./actionTypes"
 
 
 
@@ -77,5 +85,9 @@ export function createBranchResponse(name, statuses, err) {
             dispatch(branchAdded(name, Object.keys(statuses).filter(k => statuses[k])));
         }
     }
+}
+
+export function fooBarToggleShowValues(id){
+    return { "type":FOOBAR_TOGGLE_SHOW_VALUES, "id":id };
 }
 

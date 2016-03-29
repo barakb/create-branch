@@ -29,7 +29,7 @@ export const BranchRow = ({ name, repositories, onRemove, isDeleting}) => {
                  <td>{btn}</td>
              </tr>
              <tr>
-                 <td className="hiddenRow" colspan="4">
+                 <td className="hiddenRow" colSpan="4">
                      <div className="accordian-body collapse" id={repositoriesExpandedData}><table>{repositoriesRows}</table>
                      </div>
                  </td>
@@ -45,9 +45,9 @@ export const BranchesTable = ({ filtered, onRemove }) => {
       <table className="table table-hover table-condensed table-responsive">
         <thead>
           <tr>
-            <th width="15%">&nbsp;</th>
-            <th width="35%">Branch</th>
-            <th width="35%">Repositories</th>
+            <th width="5%">&nbsp;</th>
+            <th width="40%">Branch</th>
+            <th width="40%">Repositories</th>
             <th width="5%"></th>
           </tr>
         </thead>

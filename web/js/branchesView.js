@@ -1,32 +1,57 @@
 const PropTypes = React.PropTypes;
 import { updateBranchesFilterRequest, deleteBranchRequest } from "./actions";
 
+export const InternalRepositoryRow = ({ repository }) => {
+    return (
+            <tr>
+                <td>{repository}</td>
+            </tr>
+    );
+}
+
 export const BranchRow = ({ name, repositories, onRemove, isDeleting}) => {
          let s = repositories ? repositories.length : 0;
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
-         <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>
+         <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
+
+         let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository}></InternalRepositoryRow>);
+
+         let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className="glyphicon glyphicon-eye-open"></span></button>;
+         let repositoriesExpandedData =  name + '-repositories-expanded-data';
+         let targetToRepositoriesExpandedData =  '#' + repositoriesExpandedData;
+
          return (
-              <tr key={name}>
-                <td>{name}</td>
-                <td>{s}</td>
-                <td>{btn}</td>
-              </tr>
+             <tbody>
+             <tr key={name} data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle">
+                 <td>{expandbtn}</td>
+                 <td>{name}</td>
+                 <td>{s}</td>
+                 <td>{btn}</td>
+             </tr>
+             <tr>
+                 <td className="hiddenRow" colspan="4">
+                     <div className="accordian-body collapse" id={repositoriesExpandedData}><table>{repositoriesRows}</table>
+                     </div>
+                 </td>
+             </tr>
+             </tbody>
           )
 }
 
 
 export const BranchesTable = ({ filtered, onRemove }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name}  repositories={branch.repositories} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}/>);
+    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}></BranchRow>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>
           <tr>
-            <th>Branch</th>
-            <th>Repositories</th>
-            <th></th>
+            <th width="15%">&nbsp;</th>
+            <th width="35%">Branch</th>
+            <th width="35%">Repositories</th>
+            <th width="5%"></th>
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+          {rows}
       </table>
     );
 }

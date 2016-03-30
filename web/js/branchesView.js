@@ -1,5 +1,5 @@
 const PropTypes = React.PropTypes;
-import { updateBranchesFilterRequest, deleteBranchRequest } from "./actions";
+import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow } from "./actions";
 
 export const InternalRepositoryRow = ({ repository }) => {
     return (
@@ -9,12 +9,18 @@ export const InternalRepositoryRow = ({ repository }) => {
     );
 }
 
-export const BranchRow = ({ name, repositories, onRemove, isDeleting}) => {
+export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, onToggle}) => {
          let s = repositories ? repositories.length : 0;
+         let repositoriesTable = null;
+         if( expanded ){
+             let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository}></InternalRepositoryRow>);
+             repositoriesTable = <tr><td><table>{repositoriesRows}</table></td></tr>;
+         }
+
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
          <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
-         let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository}></InternalRepositoryRow>);
+
 
          let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className="glyphicon glyphicon-eye-open"></span></button>;
          let repositoriesExpandedData =  name + '-repositories-expanded-data';
@@ -22,25 +28,20 @@ export const BranchRow = ({ name, repositories, onRemove, isDeleting}) => {
 
          return (
              <tbody>
-             <tr key={name} data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle">
+             <tr key={name} data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle" onClick={() => onToggle(name)}>
                  <td>{expandbtn}</td>
                  <td>{name}</td>
                  <td>{s}</td>
                  <td>{btn}</td>
              </tr>
-             <tr>
-                 <td className="hiddenRow" colSpan="4">
-                     <div className="accordian-body collapse" id={repositoriesExpandedData}><table>{repositoriesRows}</table>
-                     </div>
-                 </td>
-             </tr>
+             {repositoriesTable}
              </tbody>
           )
 }
 
 
-export const BranchesTable = ({ filtered, onRemove }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting}></BranchRow>);
+export const BranchesTable = ({ filtered, onRemove, onToggle }) => {
+    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle}></BranchRow>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>
@@ -68,17 +69,18 @@ export const SearchBar = ({ filterText, handleUserInput }) => {
     );
 }
 
-export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove }) => {
+export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove, onToggle }) => {
     return (
       <div>
          <SearchBar filterText={filterText} handleUserInput={handleUserInput}/>
-         <BranchesTable filtered={filtered}  onRemove={onRemove}/>
+         <BranchesTable filtered={filtered}  onRemove={onRemove} onToggle={onToggle}/>
       </div>
     );
 }
 
 FilterableBranchesTable.propTypes = {
   handleUserInput: PropTypes.func.isRequired,
+  onToggle: PropTypes.func.isRequired,
   filterText: PropTypes.string.isRequired,
   filtered : PropTypes.arrayOf(
        PropTypes.shape({name : PropTypes.string.isRequired,
@@ -99,7 +101,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         handleUserInput : (text) =>  { dispatch(updateBranchesFilterRequest(text)) },
-        onRemove : (name) =>  { dispatch(deleteBranchRequest(name)) }
+        onRemove : (name) =>  { dispatch(deleteBranchRequest(name)) },
+        onToggle : (name) => { dispatch(toggleRow(name))}
     }
 }
 

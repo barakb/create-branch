@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { CREATE_BRANCH_REQUEST,
          UPDATE_BRANCHES_FILTER,
          DELETE_BRANCH_REQUEST,
@@ -5,7 +6,6 @@ import { CREATE_BRANCH_REQUEST,
          CREATE_BRANCH_RESPONSE,
          DELETE_BRANCH_RESPONSE,
          BRANCH_DELETED,
-         FOOBAR_TOGGLE_SHOW_VALUES,
          TOGGLED_BRANCH_ROW
   } from "./actionTypes"
 
@@ -88,9 +88,6 @@ export function createBranchResponse(name, statuses, err) {
     }
 }
 
-export function fooBarToggleShowValues(id){
-    return { "type":FOOBAR_TOGGLE_SHOW_VALUES, "id":id };
-}
 
 export function toggleRow(name){
     return { "type":TOGGLED_BRANCH_ROW, "name":name };

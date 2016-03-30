@@ -5,4 +5,3 @@ import "./reducers";
 import "./main";
 import "./createBranch";
 import "./branchesView";
-import "./foobarView";

@@ -18,7 +18,8 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
          }
 
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
-         <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
+         <button type="button" className="btn btn-default btn-sm" onClick={removeEvent =>
+            {removeEvent.stopPropagation();return onRemove(name);}}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
 
          let spanClassName = expanded ? "glyphicon glyphicon-triangle-top" : "glyphicon glyphicon-triangle-right";

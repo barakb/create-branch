@@ -14,15 +14,15 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
          let repositoriesTable = null;
          if( expanded ){
              let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository}></InternalRepositoryRow>);
-             repositoriesTable = <tr><td><table>{repositoriesRows}</table></td></tr>;
+             repositoriesTable = <tr><td colSpan="4"><table>{repositoriesRows}</table></td></tr>;
          }
 
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
          <button type="button" className="btn btn-default btn-sm" onClick={() => onRemove(name)}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
 
-
-         let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className="glyphicon glyphicon-eye-open"></span></button>;
+         let spanClassName = expanded ? "glyphicon glyphicon-triangle-top" : "glyphicon glyphicon-triangle-right";
+         let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className={spanClassName}></span></button>;
          let repositoriesExpandedData =  name + '-repositories-expanded-data';
          let targetToRepositoriesExpandedData =  '#' + repositoriesExpandedData;
 

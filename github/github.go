@@ -94,10 +94,10 @@ func createBranchesWithProgress(repos []*Repo, branch string, client *github.Cli
 			})
 			if err != nil {
 				fmt.Printf("error createing branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
-				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: false}
+				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" +repo.repo, Success: false}
 			} else {
 				fmt.Printf("branch %s created in repo %#v\n", branch, repo)
-				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: true}
+				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" +repo.repo, Success: true}
 			}
 		}(repo)
 	}
@@ -171,7 +171,7 @@ func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]bool {
 			if err == nil {
 				for _, head := range heads {
 					branchName := strings.TrimPrefix(*head.Ref, "refs/heads/")
-					branches <- branch{repo.repo, branchName}
+					branches <- branch{repo.owner + "/" + repo.repo, branchName}
 				}
 			} else {
 				fmt.Printf("List all ref error: %#v, on repo %#v\n", err, repo)

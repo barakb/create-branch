@@ -1,10 +1,11 @@
 const PropTypes = React.PropTypes;
 import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow } from "./actions";
 
-export const InternalRepositoryRow = ({ repository }) => {
+export const InternalRepositoryRow = ({ repository, branchName }) => {
+    let branchUrl = "https://github.com/" + repository + "/tree/" + branchName;
     return (
             <tr>
-                <td>{repository}</td>
+                <td><a href={branchUrl} target="_blank">{repository}</a></td>
             </tr>
     );
 }
@@ -13,12 +14,12 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
          let s = repositories ? repositories.length : 0;
          let repositoriesTable = null;
          if( expanded ){
-             let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository}></InternalRepositoryRow>);
+             let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository} branchName={name}></InternalRepositoryRow>);
              repositoriesTable = <tr><td colSpan="4"><table>{repositoriesRows}</table></td></tr>;
          }
 
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
-         <button type="button" className="btn btn-default btn-sm" onClick={removeEvent =>
+         <button type="button" className="btn btn-default btn-sm" onClick={(removeEvent) =>
             {removeEvent.stopPropagation();return onRemove(name);}}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
 

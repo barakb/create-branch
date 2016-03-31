@@ -3,9 +3,17 @@ import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow } from "./a
 
 export const InternalRepositoryRow = ({ repository, branchName }) => {
     let branchUrl = "https://github.com/" + repository + "/tree/" + branchName;
+    let branchCommitsUrl = "https://github.com/" + repository + "/commits/" + branchName;
+    let branchesUrl = "https://github.com/" + repository + "/" + "/branches";
     return (
             <tr>
                 <td><a href={branchUrl} target="_blank">{repository}</a></td>
+                <td>&nbsp;&nbsp;&nbsp;
+                    <a href={branchCommitsUrl} target="_blank" title="Commits"><span className="glyphicon glyphicon-time"></span></a>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;
+                    <a href={branchesUrl} target="_blank" title ="Branches"><span className="glyphicon glyphicon-random"></span></a>
+                </td>
             </tr>
     );
 }
@@ -14,8 +22,8 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
          let s = repositories ? repositories.length : 0;
          let repositoriesTable = null;
          if( expanded ){
-             let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow repository={repository} branchName={name}></InternalRepositoryRow>);
-             repositoriesTable = <tr><td colSpan="4"><table>{repositoriesRows}</table></td></tr>;
+             let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow key={name + repository} repository={repository} branchName={name}></InternalRepositoryRow>);
+             repositoriesTable = <tr><td colSpan="4"><table><tbody>{repositoriesRows}</tbody></table></td></tr>;
          }
 
          let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
@@ -30,7 +38,7 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
 
          return (
              <tbody>
-             <tr key={name} data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle" onClick={() => onToggle(name)}>
+             <tr data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle" onClick={() => onToggle(name)}>
                  <td>{expandbtn}</td>
                  <td>{name}</td>
                  <td>{s}</td>

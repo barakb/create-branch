@@ -50,7 +50,7 @@ export const BranchesTable = ({ filtered, onRemove, onToggle }) => {
           <tr>
             <th width="5%">&nbsp;</th>
             <th width="40%">Branch</th>
-            <th width="40%">Repositories</th>
+            <th width="40%">Affected repositories amount</th>
             <th width="5%"></th>
           </tr>
         </thead>

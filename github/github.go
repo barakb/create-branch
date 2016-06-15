@@ -134,8 +134,10 @@ func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]bool {
 	}
 	branches := make(chan branch, 100)
 	repos := createReposFromNames(ReposNames)
+	fmt.Printf("ReposNames are: %s\n", ReposNames)
 	var wg sync.WaitGroup
 	for _, repo := range repos {
+		fmt.Printf("ListAllRefsAsMap working on repo: %s\n", *repo)
 		wg.Add(1)
 		go func(repo *Repo) {
 			defer func() {

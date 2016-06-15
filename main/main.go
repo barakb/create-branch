@@ -34,6 +34,7 @@ func main() {
 		fmt.Printf("Error:%s\n", err.Error())
 		return
 	}
+	fmt.Printf("repos read from %s\n", repos)
 	gh.ReposNames = repos
 	go session.GlobalSessions.GC()
 	websocketHandler := &handlers.WebSocketHandler{}
@@ -63,5 +64,6 @@ func readRepos(repos string) ([]string, error) {
 		return nil, err
 	}
 	str := string(bytes)
+	fmt.Printf("repos are: %s\n", str)
 	return regexp.MustCompile("\\s+").Split(str, -1), nil
 }

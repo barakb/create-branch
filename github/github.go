@@ -22,6 +22,7 @@ func (repo Repo) String() string {
 }
 
 func createReposFromNames(names []string) []*Repo {
+	fmt.Printf("creating repos from names %s\n", names);
 	ret := make([]*Repo, 0)
 	for _, name := range names {
 		if strings.TrimSpace(name) != "" && strings.Contains(name, "/") {
@@ -29,6 +30,7 @@ func createReposFromNames(names []string) []*Repo {
 			ret = append(ret, &Repo{owner: components[0], repo: components[1]})
 		}
 	}
+	fmt.Printf("repos are %s\n", names);
 	return ret
 }
 

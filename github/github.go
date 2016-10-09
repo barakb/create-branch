@@ -188,7 +188,7 @@ func CreateBranchsWithProgress(branch string, client *github.Client) (progressCh
 	return createBranchesWithProgress(repos, branch, client)
 }
 
-func ListRefs(client *github.Client, owner string, repo string) ([]github.Reference, error) {
+func ListRefs(client *github.Client, owner string, repo string) ([]*github.Reference, error) {
 	refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type: "heads/"})
 	//refs, _, err := client.Git.ListRefs(owner, repo, &github.ReferenceListOptions{Type:"heads"});
 	return refs, err

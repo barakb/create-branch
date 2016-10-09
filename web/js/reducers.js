@@ -44,7 +44,7 @@ function viewBranch (state = viewBranchesInitialState , action) {
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case BRANCH_ADDED:
-           branches = [ ...state.branches, {name:action.name, repositories:action.repositories, expanded: false}];
+           branches = [ ...state.branches, {name:action.name, repositories:action.repositories, expanded: false, readOnly:action.readOnly}];
            branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
@@ -54,7 +54,7 @@ function viewBranch (state = viewBranchesInitialState , action) {
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
        case TOGGLED_BRANCH_ROW:
-           console.log( action );
+//           console.log( action );
            branches = state.branches.map( b => b.name === action.name ? {...b, expanded:!b.expanded} : b );
            branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))

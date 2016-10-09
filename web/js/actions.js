@@ -46,13 +46,13 @@ export function deleteBranchResponse(name, err){
     }
 }
 
-export function branchAdded(name, repositories) {
-//    console.info("branchAdded", name, quantity)
-    return {type:BRANCH_ADDED, name, repositories};
+export function branchAdded(name, repositories, readOnly) {
+//    console.info("branchAdded", name, repositories, readOnly);
+    return {type:BRANCH_ADDED, name, repositories, readOnly};
 }
 
 export function branchDeleted(name) {
-//    console.info("branchAdded", name)
+//    console.info("branch deleted", name)
     return {type:BRANCH_DELETED, name};
 }
 

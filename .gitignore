@@ -6,3 +6,5 @@ run.sh
 lib
 node_modules
 docker/run.sh
+vendor
+glide.lock

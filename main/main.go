@@ -28,6 +28,7 @@ var port = flag.Int("port", 4430, "Configure the server port")
 var repos = flag.String("repos", defaultRepoFile(), "Configure the where the repositories file")
 
 func main() {
+
 	iniflags.Parse()
 	repos, err := readRepos(*repos)
 	if err != nil {

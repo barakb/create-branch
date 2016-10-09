@@ -4,7 +4,7 @@ import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow } from "./a
 export const InternalRepositoryRow = ({ repository, branchName }) => {
     let branchUrl = "https://github.com/" + repository + "/tree/" + branchName;
     let branchCommitsUrl = "https://github.com/" + repository + "/commits/" + branchName;
-    let branchesUrl = "https://github.com/" + repository + "/" + "/branches";
+    let branchesUrl = "https://github.com/" + repository + "/branches";
     return (
             <tr>
                 <td><a href={branchUrl} target="_blank">{repository}</a></td>
@@ -18,15 +18,14 @@ export const InternalRepositoryRow = ({ repository, branchName }) => {
     );
 }
 
-export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, onToggle}) => {
+export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, onToggle, readOnly}) => {
          let s = repositories ? repositories.length : 0;
          let repositoriesTable = null;
          if( expanded ){
              let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow key={name + repository} repository={repository} branchName={name}></InternalRepositoryRow>);
              repositoriesTable = <tr><td colSpan="4"><table><tbody>{repositoriesRows}</tbody></table></td></tr>;
          }
-
-         let btn= isDeleting ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
+         let btn = (isDeleting || readOnly) ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
          <button type="button" className="btn btn-default btn-sm" onClick={(removeEvent) =>
             {removeEvent.stopPropagation();return onRemove(name);}}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
@@ -51,7 +50,7 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
 
 
 export const BranchesTable = ({ filtered, onRemove, onToggle }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle}></BranchRow>);
+    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle} readOnly={branch.readOnly}></BranchRow>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>

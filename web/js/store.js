@@ -32,11 +32,11 @@ const loadBranches = () => {
     }).then(function(response) {
         return response.json()
     }).then(function(branches){
-        console.info("branches ", branches)
+//        console.info("branches ", branches)
         for (var key of Object.keys(branches)) {
-           if(key.startsWith(document.currentLoginName + "_")){
-                store.dispatch(branchAdded(key,  Object.keys(branches[key])));
-           }
+//           if(key.startsWith(document.currentLoginName + "_")){
+                store.dispatch(branchAdded(key,  Object.keys(branches[key]), !key.startsWith(document.currentLoginName + "_")));
+//           }
         }
     }).catch(function(err) {
         console.info("err is ", err)

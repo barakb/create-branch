@@ -19,7 +19,7 @@ func (h LogoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//session.GlobalSessions.SessionDestroy(w, r)
 	//http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	var refs []github.Reference
+	var refs []*github.Reference
 	refs, err := gh.ListRefs(client, "GigaSpaces", "xap")
 	if err != nil {
 		fmt.Printf("failed to get heads, error is:%#v\n", err)

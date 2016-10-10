@@ -1,5 +1,5 @@
 const PropTypes = React.PropTypes;
-import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow } from "./actions";
+import { updateBranchesFilterRequest, deleteBranchRequest, toggleRow, toggleSourceBranch } from "./actions";
 
 export const InternalRepositoryRow = ({ repository, branchName }) => {
     let branchUrl = "https://github.com/" + repository + "/tree/" + branchName;
@@ -18,9 +18,10 @@ export const InternalRepositoryRow = ({ repository, branchName }) => {
     );
 }
 
-export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, onToggle, readOnly}) => {
+export const BranchRow = ({ name, repositories, expanded, isSource, onRemove, isDeleting, onToggle, readOnly, onToggleSource}) => {
          let s = repositories ? repositories.length : 0;
          let repositoriesTable = null;
+
          if( expanded ){
              let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow key={name + repository} repository={repository} branchName={name}></InternalRepositoryRow>);
              repositoriesTable = <tr><td colSpan="4"><table><tbody>{repositoriesRows}</tbody></table></td></tr>;
@@ -29,7 +30,8 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
          <button type="button" className="btn btn-default btn-sm" onClick={(removeEvent) =>
             {removeEvent.stopPropagation();return onRemove(name);}}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
 
-
+         let sourceCB= isSource ? (<span><input type="checkbox" checked onClick={(toggleEvent) =>{toggleEvent.stopPropagation();return onToggleSource(name);}}/><label>{name}</label></span>) :
+                                   (<span><input type="checkbox" onClick={(toggleEvent) => {toggleEvent.stopPropagation();return onToggleSource(name);}}/><label>{name}</label></span>);
          let spanClassName = expanded ? "glyphicon glyphicon-triangle-top" : "glyphicon glyphicon-triangle-right";
          let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className={spanClassName}></span></button>;
          let repositoriesExpandedData =  name + '-repositories-expanded-data';
@@ -39,7 +41,7 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
              <tbody>
              <tr data-toggle="collapse" data-target={targetToRepositoriesExpandedData} className="accordion-toggle" onClick={() => onToggle(name)}>
                  <td>{expandbtn}</td>
-                 <td>{name}</td>
+                 <td>{sourceCB}</td>
                  <td>{s}</td>
                  <td>{btn}</td>
              </tr>
@@ -49,15 +51,15 @@ export const BranchRow = ({ name, repositories, expanded, onRemove, isDeleting, 
 }
 
 
-export const BranchesTable = ({ filtered, onRemove, onToggle }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle} readOnly={branch.readOnly}></BranchRow>);
+export const BranchesTable = ({ filtered, onRemove, onToggle, onToggleSource }) => {
+    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} isSource={branch.isSource} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle} readOnly={branch.readOnly} onToggleSource={onToggleSource}></BranchRow>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>
           <tr>
             <th width="5%">&nbsp;</th>
             <th width="40%">Branch</th>
-            <th width="40%">Affected repositories amount</th>
+            <th width="40%">Affected repositories</th>
             <th width="5%"></th>
           </tr>
         </thead>
@@ -78,11 +80,11 @@ export const SearchBar = ({ filterText, handleUserInput }) => {
     );
 }
 
-export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove, onToggle }) => {
+export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove, onToggle, onToggleSource }) => {
     return (
       <div>
          <SearchBar filterText={filterText} handleUserInput={handleUserInput}/>
-         <BranchesTable filtered={filtered}  onRemove={onRemove} onToggle={onToggle}/>
+         <BranchesTable filtered={filtered}  onRemove={onRemove} onToggle={onToggle} onToggleSource={onToggleSource} />
       </div>
     );
 }
@@ -90,6 +92,7 @@ export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput,
 FilterableBranchesTable.propTypes = {
   handleUserInput: PropTypes.func.isRequired,
   onToggle: PropTypes.func.isRequired,
+  onToggleSource: PropTypes.func.isRequired,
   filterText: PropTypes.string.isRequired,
   filtered : PropTypes.arrayOf(
        PropTypes.shape({name : PropTypes.string.isRequired,
@@ -111,7 +114,8 @@ const mapDispatchToProps = (dispatch) => {
     return {
         handleUserInput : (text) =>  { dispatch(updateBranchesFilterRequest(text)) },
         onRemove : (name) =>  { dispatch(deleteBranchRequest(name)) },
-        onToggle : (name) => { dispatch(toggleRow(name))}
+        onToggle : (name) => { dispatch(toggleRow(name))},
+        onToggleSource : (name) => { dispatch(toggleSourceBranch(name))}
     }
 }
 

@@ -5,7 +5,8 @@ import { CREATE_BRANCH_REQUEST,
          CREATE_BRANCH_RESPONSE,
          DELETE_BRANCH_RESPONSE,
          BRANCH_DELETED,
-         TOGGLED_BRANCH_ROW
+         TOGGLED_BRANCH_ROW,
+         TOGGLE_SOURCE_BRANCH
   } from "./actionTypes"
 
 
@@ -90,4 +91,9 @@ export function createBranchResponse(name, statuses, err) {
 
 export function toggleRow(name){
     return { "type":TOGGLED_BRANCH_ROW, "name":name };
+}
+
+export function toggleSourceBranch(name){
+    console.info("toggleSourceBranch", TOGGLE_SOURCE_BRANCH, name);
+    return { "type":TOGGLE_SOURCE_BRANCH, "name":name };
 }

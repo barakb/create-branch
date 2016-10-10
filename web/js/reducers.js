@@ -6,11 +6,12 @@ import { CREATE_BRANCH_REQUEST,
          BRANCH_ADDED,
          DELETE_BRANCH_RESPONSE,
          BRANCH_DELETED,
-         TOGGLED_BRANCH_ROW
+         TOGGLED_BRANCH_ROW,
+         TOGGLE_SOURCE_BRANCH
         }
  from "./actionTypes"
 
-const createBranchInitialState = {name:'', isFetching:false};
+const createBranchInitialState = {name:'', isFetching:false, fromBranch : ''};
 
 function createBranch (state = createBranchInitialState , action) {
    switch (action.type){
@@ -18,6 +19,9 @@ function createBranch (state = createBranchInitialState , action) {
            return {...state, isFetching:true};
        case CREATE_BRANCH_RESPONSE:
            return {...state, isFetching:false};
+      case TOGGLE_SOURCE_BRANCH:
+           let fromBranch = state.fromBranch === action.name ? '' : action.name
+           return {...state, fromBranch};
        default:
            return state;
    }
@@ -44,7 +48,7 @@ function viewBranch (state = viewBranchesInitialState , action) {
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
       case BRANCH_ADDED:
-           branches = [ ...state.branches, {name:action.name, repositories:action.repositories, expanded: false, readOnly:action.readOnly}];
+           branches = [ ...state.branches, {name:action.name, repositories:action.repositories, expanded: false, readOnly:action.readOnly, isSource:false}];
            branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
@@ -54,12 +58,14 @@ function viewBranch (state = viewBranchesInitialState , action) {
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
           return  { ...state, branches, filtered };
        case TOGGLED_BRANCH_ROW:
-//           console.log( action );
            branches = state.branches.map( b => b.name === action.name ? {...b, expanded:!b.expanded} : b );
            branches.sort((b1, b2) => b1.name > b2.name);
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText))
            return  { ...state, branches, filtered };
-
+       case TOGGLE_SOURCE_BRANCH:
+           branches = state.branches.map( b => b.name === action.name ? {...b, isSource:!b.isSource} : {...b, isSource:false} );
+           filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText));
+           return  { ...state, branches, filtered};
        default:
            return { ...state, filtered : state.branches.filter(b => -1 < b.name.indexOf(state.filterText))};
    }

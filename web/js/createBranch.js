@@ -1,9 +1,10 @@
 import { createBranchRequest } from "./actions";
 
-export const CreateBranch = ({ name, onClick, isFetching }) => {
+export const CreateBranch = ({ name, onClick, isFetching, fromBranch }) => {
          let input;
-         let btn = isFetching ? <button type="submit" className="btn btn-default disabled">Create</button> :
-            <button type="submit" className="btn btn-default" onClick={() => onClick(input.value)}>Create</button>
+         let from = fromBranch ? ("Create From " + fromBranch) : "Create From master"
+         let btn = isFetching ? <button type="submit" className="btn btn-default disabled">{from}</button> :
+            <button type="submit" className="btn btn-default" onClick={() => onClick(input.value, fromBranch)}>{from}</button>
 
          return (
              <form className="navbar-form navbar-left" role="search" onSubmit={ev => ev.preventDefault() } >
@@ -22,8 +23,9 @@ export const CreateBranch = ({ name, onClick, isFetching }) => {
 const PropTypes = React.PropTypes;
 CreateBranch.propTypes = {
   onClick: PropTypes.func.isRequired,
+  fromBranch : PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  isFetching: PropTypes.bool.isRequired
+  isFetching: PropTypes.bool.isRequired,
 };
 
 const { Component } = React;
@@ -31,19 +33,18 @@ const { Component } = React;
 const mapStateToProps = (state) => {
     return {
         name : state.createBranch.name,
-        isFetching : state.createBranch.isFetching
+        fromBranch : state.createBranch.fromBranch,
+        isFetching : state.createBranch.isFetching,
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onClick : (name) =>  { dispatch(createBranchRequest(name)); }
+        onClick : (name, fromBranch) =>  { dispatch(createBranchRequest(name, fromBranch)); }
     }
 }
 
 const { connect } = ReactRedux;
 
 export const CreateBranchContainer = connect(mapStateToProps, mapDispatchToProps)(CreateBranch);
-
-
 

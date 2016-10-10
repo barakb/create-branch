@@ -1,2 +1,3 @@
-barakb/fake-web-tree
-barakb/web-crawler
+xap/xap
+Gigaspaces/xap-premium
+Gigaspaces/xap-dotnet

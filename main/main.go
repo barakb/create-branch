@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 )
 
 func init() {
@@ -45,7 +46,7 @@ func main() {
 	http.Handle("/githuboa_cb", handlers.GithubLoginHandler{})
 	http.Handle("/api/create_branch/", handlers.MustAuth(handlers.CreateBranchHandler{WS:websocketHandler}))
 	http.Handle("/api/delete_branch/", handlers.MustAuth(handlers.DeleteBranchHandler{WS:websocketHandler}))
-	http.Handle("/api/get_branches/", handlers.MustAuth(handlers.GetBranchsHandler{WS:websocketHandler}))
+	http.Handle("/api/get_branches/", handlers.MustAuth(handlers.GetBranchsHandler{WS:websocketHandler, Repos: repos}))
 	http.Handle("/web/", handlers.MustAuth(http.StripPrefix("/web/", http.FileServer(http.Dir("web")))))
 	fmt.Printf("Server started on https://localhost:%d\n", *port)
 	fmt.Println(http.ListenAndServeTLS(fmt.Sprintf(":%d", *port), "keys/server.pem", "keys/server.key", nil))
@@ -64,7 +65,7 @@ func readRepos(repos string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	str := string(bytes)
+	str := strings.TrimSpace(string(bytes))
 	fmt.Printf("repos are: %s\n", str)
 	return regexp.MustCompile("\\s+").Split(str, -1), nil
 }

@@ -57,15 +57,15 @@ export function branchDeleted(name) {
     return {type:BRANCH_DELETED, name};
 }
 
-export function createBranchRequest(name) {
-//    console.info("createBranchRequest", name)
+export function createBranchRequest(name, from) {
+    from = !from ? "master" : from;
     return function(dispatch){
         if (!name){
             return
         }
         const branchName = document.currentLoginName + "_" + name;
         dispatch({type:CREATE_BRANCH_REQUEST, branchName});
-        fetch('/api/create_branch/' + branchName, {
+        fetch('/api/create_branch/' + branchName +'?from=' + encodeURIComponent(from), {
             method: 'get',
             credentials: 'same-origin',
             cache: 'no-cache'

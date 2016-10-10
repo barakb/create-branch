@@ -31,12 +31,13 @@ const loadBranches = () => {
     	cache: 'no-cache'
     }).then(function(response) {
         return response.json()
-    }).then(function(branches){
-//        console.info("branches ", branches)
+    }).then(function(res){
+        let branches = res.branches;
+        let repos = res.repos;
         for (var key of Object.keys(branches)) {
-//           if(key.startsWith(document.currentLoginName + "_")){
-                store.dispatch(branchAdded(key,  Object.keys(branches[key]), !key.startsWith(document.currentLoginName + "_")));
-//           }
+                if(Object.keys(branches[key]).length ==  repos.length){
+                    store.dispatch(branchAdded(key,  Object.keys(branches[key]), !key.startsWith(document.currentLoginName + "_")));
+                }
         }
     }).catch(function(err) {
         console.info("err is ", err)

@@ -8,8 +8,10 @@ import (
 )
 
 var ReposNames = []string{
-	"GigaSpaces/xap",
-	"GigaSpaces/xap-open"}
+	"xap/xap",
+	"Gigaspaces/xap-premium",
+	"Gigaspaces/xap-dotnet",
+}
 
 type Repo struct {
 	owner string
@@ -34,14 +36,14 @@ func createReposFromNames(names []string) []*Repo {
 	return ret
 }
 
-func fillTipSha(repos []*Repo, client *github.Client) *sync.WaitGroup {
+func fillSha(repos []*Repo, from string,client *github.Client) *sync.WaitGroup {
 	var wg sync.WaitGroup
 	for _, repo := range repos {
 		wg.Add(1)
 		go func(repo *Repo) {
 			defer wg.Done()
 			//fmt.Printf("working on repo %#v\n", repo)
-			ref, _, err := client.Git.GetRef(repo.owner, repo.repo, "refs/heads/master")
+			ref, _, err := client.Git.GetRef(repo.owner, repo.repo, "refs/heads/" + from)
 			if err != nil {
 				fmt.Printf("error: %#v\n", err)
 			}
@@ -182,9 +184,9 @@ func DeleteBranchWithProgress(branch string, client *github.Client) (progressCha
 	return deleteBranchesWithProgress(repos, branch, client)
 }
 
-func CreateBranchsWithProgress(branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
+func CreateBranchsWithProgress(branch string, from string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
 	repos := createReposFromNames(ReposNames)
-	fillTipSha(repos, client).Wait()
+	fillSha(repos, from, client).Wait()
 	return createBranchesWithProgress(repos, branch, client)
 }
 

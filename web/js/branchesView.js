@@ -29,9 +29,8 @@ export const BranchRow = ({ name, repositories, expanded, isSource, onRemove, is
          let btn = (isDeleting || readOnly) ? <button type="button" className="btn btn-default btn-sm disabled" ><span className="glyphicon glyphicon-remove"></span> Remove</button> :
          <button type="button" className="btn btn-default btn-sm" onClick={(removeEvent) =>
             {removeEvent.stopPropagation();return onRemove(name);}}><span className="glyphicon glyphicon-remove"></span> Remove</button>;
-
-         let sourceCB= isSource ? (<span><input type="checkbox" checked onClick={(toggleEvent) =>{toggleEvent.stopPropagation();return onToggleSource(name);}}/><label>{name}</label></span>) :
-                                   (<span><input type="checkbox" onClick={(toggleEvent) => {toggleEvent.stopPropagation();return onToggleSource(name);}}/><label>{name}</label></span>);
+         let sourceCB=isSource ? (<span><input type="checkbox" checked onClick={(toggleEvent) =>{toggleEvent.stopPropagation();return onToggleSource(name);}} /><label>{name}</label></span>) :
+                                   (<span><input type="checkbox" onClick={(toggleEvent) => {toggleEvent.stopPropagation();return onToggleSource(name);}} /><label>{name}</label></span>);
          let spanClassName = expanded ? "glyphicon glyphicon-triangle-top" : "glyphicon glyphicon-triangle-right";
          let expandbtn= <button type="button" className="btn btn-default btn-sm"><span className={spanClassName}></span></button>;
          let repositoriesExpandedData =  name + '-repositories-expanded-data';

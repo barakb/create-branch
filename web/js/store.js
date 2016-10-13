@@ -1,4 +1,4 @@
-import { createBranchRequest, branchAdded } from "./actions"
+import { createBranchRequest, branchAdded, setUser } from "./actions"
 import { CreateBranch, CreateBranchContainer } from "./createBranch";
 import { FilterableBranchesTableComponent } from "./branchesView";
 import { rootReducer } from "./reducers";
@@ -23,6 +23,13 @@ ReactDOM.render(
 );
 
 
+const isReadOnly = (branches, login) => {
+    let ret = true;
+    let mine = Object.keys(branches).filter(function(value){
+        return branches[value] == login;
+    });
+    return mine.length < Object.keys(branches).length;
+}
 
 const loadBranches = () => {
     fetch('api/get_branches/', {
@@ -32,11 +39,12 @@ const loadBranches = () => {
     }).then(function(response) {
         return response.json()
     }).then(function(res){
+        store.dispatch(setUser(res.login));
         let branches = res.branches;
         let repos = res.repos;
         for (var key of Object.keys(branches)) {
                 if(Object.keys(branches[key]).length ==  repos.length){
-                    store.dispatch(branchAdded(key,  Object.keys(branches[key]), !key.startsWith(document.currentLoginName + "_")));
+                    store.dispatch(branchAdded(key,  branches[key], isReadOnly(branches[key], document.currentLoginName)));
                 }
         }
     }).catch(function(err) {

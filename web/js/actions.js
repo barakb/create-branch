@@ -6,7 +6,8 @@ import { CREATE_BRANCH_REQUEST,
          DELETE_BRANCH_RESPONSE,
          BRANCH_DELETED,
          TOGGLED_BRANCH_ROW,
-         TOGGLE_SOURCE_BRANCH
+         TOGGLE_SOURCE_BRANCH,
+         SET_USER
   } from "./actionTypes"
 
 
@@ -48,8 +49,11 @@ export function deleteBranchResponse(name, err){
 }
 
 export function branchAdded(name, repositories, readOnly) {
-//    console.info("branchAdded", name, repositories, readOnly);
     return {type:BRANCH_ADDED, name, repositories, readOnly};
+}
+
+export function setUser(login) {
+    return {type:SET_USER, login};
 }
 
 export function branchDeleted(name) {
@@ -63,7 +67,7 @@ export function createBranchRequest(name, from) {
         if (!name){
             return
         }
-        const branchName = document.currentLoginName + "_" + name;
+        const branchName = name;
         dispatch({type:CREATE_BRANCH_REQUEST, branchName});
         fetch('/api/create_branch/' + branchName +'?from=' + encodeURIComponent(from), {
             method: 'get',
@@ -94,6 +98,5 @@ export function toggleRow(name){
 }
 
 export function toggleSourceBranch(name){
-    console.info("toggleSourceBranch", TOGGLE_SOURCE_BRANCH, name);
     return { "type":TOGGLE_SOURCE_BRANCH, "name":name };
 }

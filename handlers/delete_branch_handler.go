@@ -26,19 +26,19 @@ func (h DeleteBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	client := sess.Get("*github.client").(*github.Client)
 	progressChan, resChan := gh.DeleteBranchWithProgress(branchName, client)
 
-	go func(){
-	    for progress := range progressChan{
-		    fmt.Printf("Reporting progress on deleted branch %#v\n", progress);
-		    js, err := json.Marshal(progress)
-		    //fmt.Printf("{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
-		    if err == nil{
-			    fmt.Fprintf(h.WS.Conn(), "{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
-		    }
+	go func() {
+		for progress := range progressChan {
+			fmt.Printf("Reporting progress on deleted branch %#v\n", progress)
+			js, err := json.Marshal(progress)
+			//fmt.Printf("{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
+			if err == nil {
+				fmt.Fprintf(h.WS.Conn(), "{'type' : 'delete-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
+			}
 
-	    }
+		}
 	}()
 
-	res := <- resChan
+	res := <-resChan
 	js, err := json.Marshal(res)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

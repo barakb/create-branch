@@ -7,7 +7,8 @@ import { CREATE_BRANCH_REQUEST,
          DELETE_BRANCH_RESPONSE,
          BRANCH_DELETED,
          TOGGLED_BRANCH_ROW,
-         TOGGLE_SOURCE_BRANCH
+         TOGGLE_SOURCE_BRANCH,
+         SET_USER,
         }
  from "./actionTypes"
 
@@ -30,7 +31,7 @@ function createBranch (state = createBranchInitialState , action) {
 const branches = [
              ];
 
-const viewBranchesInitialState = {filterText:'', branches, filtered : []};
+const viewBranchesInitialState = {filterText:'', branches, filtered : [], login:""};
 
 function viewBranch (state = viewBranchesInitialState , action) {
    switch (action.type){
@@ -66,6 +67,9 @@ function viewBranch (state = viewBranchesInitialState , action) {
            branches = state.branches.map( b => b.name === action.name ? {...b, isSource:!b.isSource} : {...b, isSource:false} );
            filtered = branches.filter(b => -1 < b.name.indexOf(state.filterText));
            return  { ...state, branches, filtered};
+       case SET_USER:
+           let login = action.login
+           return  { ...state, login};
        default:
            return { ...state, filtered : state.branches.filter(b => -1 < b.name.indexOf(state.filterText))};
    }

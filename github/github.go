@@ -7,11 +7,7 @@ import (
 	"sync"
 )
 
-var ReposNames = []string{
-	"xap/xap",
-	"Gigaspaces/xap-premium",
-	"Gigaspaces/xap-dotnet",
-}
+var ReposNames []string
 
 type Repo struct {
 	owner string
@@ -24,7 +20,7 @@ func (repo Repo) String() string {
 }
 
 func createReposFromNames(names []string) []*Repo {
-	fmt.Printf("creating repos from names %s\n", names);
+	fmt.Printf("creating repos from names %s\n", names)
 	ret := make([]*Repo, 0)
 	for _, name := range names {
 		if strings.TrimSpace(name) != "" && strings.Contains(name, "/") {
@@ -32,18 +28,18 @@ func createReposFromNames(names []string) []*Repo {
 			ret = append(ret, &Repo{owner: components[0], repo: components[1]})
 		}
 	}
-	fmt.Printf("repos are %s\n", names);
+	fmt.Printf("repos are %s\n", names)
 	return ret
 }
 
-func fillSha(repos []*Repo, from string,client *github.Client) *sync.WaitGroup {
+func fillSha(repos []*Repo, from string, client *github.Client) *sync.WaitGroup {
 	var wg sync.WaitGroup
 	for _, repo := range repos {
 		wg.Add(1)
 		go func(repo *Repo) {
 			defer wg.Done()
 			//fmt.Printf("working on repo %#v\n", repo)
-			ref, _, err := client.Git.GetRef(repo.owner, repo.repo, "refs/heads/" + from)
+			ref, _, err := client.Git.GetRef(repo.owner, repo.repo, "refs/heads/"+from)
 			if err != nil {
 				fmt.Printf("error: %#v\n", err)
 			}
@@ -54,7 +50,6 @@ func fillSha(repos []*Repo, from string,client *github.Client) *sync.WaitGroup {
 	}
 	return &wg
 }
-
 
 func createBranchesWithProgress(repos []*Repo, branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
 	progressChan = make(chan RepoStatus, len(repos))
@@ -70,10 +65,10 @@ func createBranchesWithProgress(repos []*Repo, branch string, client *github.Cli
 			})
 			if err != nil {
 				fmt.Printf("error createing branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
-				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" +repo.repo, Success: false}
+				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" + repo.repo, Success: false}
 			} else {
 				fmt.Printf("branch %s created in repo %#v\n", branch, repo)
-				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" +repo.repo, Success: true}
+				intermediateProgressChan <- RepoStatus{Name: repo.owner + "/" + repo.repo, Success: true}
 			}
 		}(repo)
 	}
@@ -92,14 +87,13 @@ func createBranchesWithProgress(repos []*Repo, branch string, client *github.Cli
 	return progressChan, resChan
 }
 
-
 func deleteBranchesWithProgress(repos []*Repo, branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
 	progressChan = make(chan RepoStatus, len(repos))
 	resChan = make(chan map[string]interface{})
 	intermediateProgressChan := make(chan RepoStatus, len(repos))
 	for _, repo := range repos {
 		go func(repo *Repo) {
-			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/" + branch)
+			_, err := client.Git.DeleteRef(repo.owner, repo.repo, "refs/heads/"+branch)
 			if err != nil {
 				fmt.Printf("error deleting branch %s in repo: %#v, error is %s:\n", branch, repo, err.Error())
 				intermediateProgressChan <- RepoStatus{Name: repo.repo, Success: false}
@@ -125,11 +119,11 @@ func deleteBranchesWithProgress(repos []*Repo, branch string, client *github.Cli
 }
 
 type BranchOnRepositories struct {
-	Name     string       `json:"name"`
+	Name     string          `json:"name"`
 	Statuses map[string]bool `json:"statuses"`
 }
 
-func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]bool {
+func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]string {
 	type branch struct {
 		repo   string
 		branch string
@@ -163,14 +157,14 @@ func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]bool {
 		close(branches)
 	}()
 
-	var res map[string]map[string]bool = make(map[string]map[string]bool)
-	resChan := make(chan map[string]map[string]bool)
+	var res map[string]map[string]string = make(map[string]map[string]string)
+	resChan := make(chan map[string]map[string]string)
 	go func() {
 		for branch := range branches {
 			if b, ok := res[branch.branch]; ok {
-				b[branch.repo] = true
-			}else {
-				res[branch.branch] = map[string]bool{branch.repo : true}
+				b[branch.repo] = ""
+			} else {
+				res[branch.branch] = map[string]string{branch.repo: ""}
 			}
 		}
 		resChan <- res

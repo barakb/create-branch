@@ -30,16 +30,16 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	progressChan, resChan := gh.CreateBranchsWithProgress(branchName, from, client)
 
-	go func(){
-		for progress := range progressChan{
+	go func() {
+		for progress := range progressChan {
 			js, err := json.Marshal(progress)
-			if err == nil{
+			if err == nil {
 				fmt.Fprintf(h.WS.Conn(), "{'type' : 'create-branch-progress'\n 'branch' : %q,\n 'progress' : %s}\n", branchName, js)
 			}
 		}
 	}()
 
-	created := <- resChan
+	created := <-resChan
 	js, err := json.Marshal(created)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

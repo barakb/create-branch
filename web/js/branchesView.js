@@ -18,10 +18,10 @@ export const InternalRepositoryRow = ({ repository, branchName }) => {
     );
 }
 
-export const BranchRow = ({ name, repositories, expanded, isSource, onRemove, isDeleting, onToggle, readOnly, onToggleSource}) => {
+export const BranchRow = ({ name, repositoriesMap, login, expanded, isSource, onRemove, isDeleting, onToggle, readOnly, onToggleSource}) => {
+         let repositories = Object.keys(repositoriesMap);
          let s = repositories ? repositories.length : 0;
          let repositoriesTable = null;
-
          if( expanded ){
              let repositoriesRows = repositories.map((repository) => <InternalRepositoryRow key={name + repository} repository={repository} branchName={name}></InternalRepositoryRow>);
              repositoriesTable = <tr><td colSpan="4"><table><tbody>{repositoriesRows}</tbody></table></td></tr>;
@@ -50,8 +50,8 @@ export const BranchRow = ({ name, repositories, expanded, isSource, onRemove, is
 }
 
 
-export const BranchesTable = ({ filtered, onRemove, onToggle, onToggleSource }) => {
-    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositories={branch.repositories} expanded={branch.expanded} isSource={branch.isSource} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle} readOnly={branch.readOnly} onToggleSource={onToggleSource}></BranchRow>);
+export const BranchesTable = ({ filtered, login, onRemove, onToggle, onToggleSource }) => {
+    let rows = filtered.map((branch) => <BranchRow name={branch.name} repositoriesMap={branch.repositories} login={login} expanded={branch.expanded} isSource={branch.isSource} key={branch.name} onRemove={onRemove} isDeleting={branch.isDeleting} onToggle={onToggle} readOnly={branch.readOnly} onToggleSource={onToggleSource}></BranchRow>);
     return (
       <table className="table table-hover table-condensed table-responsive">
         <thead>
@@ -79,11 +79,11 @@ export const SearchBar = ({ filterText, handleUserInput }) => {
     );
 }
 
-export const FilterableBranchesTable = ({ filterText, filtered, handleUserInput, onRemove, onToggle, onToggleSource }) => {
+export const FilterableBranchesTable = ({ filterText, filtered, login, handleUserInput, onRemove, onToggle, onToggleSource }) => {
     return (
       <div>
          <SearchBar filterText={filterText} handleUserInput={handleUserInput}/>
-         <BranchesTable filtered={filtered}  onRemove={onRemove} onToggle={onToggle} onToggleSource={onToggleSource} />
+         <BranchesTable filtered={filtered}  login={login} onRemove={onRemove} onToggle={onToggle} onToggleSource={onToggleSource} />
       </div>
     );
 }
@@ -93,6 +93,7 @@ FilterableBranchesTable.propTypes = {
   onToggle: PropTypes.func.isRequired,
   onToggleSource: PropTypes.func.isRequired,
   filterText: PropTypes.string.isRequired,
+  login: PropTypes.string.isRequired,
   filtered : PropTypes.arrayOf(
        PropTypes.shape({name : PropTypes.string.isRequired,
                         statuses : PropTypes.arrayOf(PropTypes.shape({name: PropTypes.string.isRequired, success : PropTypes.bool.isRequired}))})),
@@ -105,7 +106,8 @@ const { Component } = React;
 const mapStateToProps = (state) => {
     return {
         filterText : state.viewBranch.filterText,
-        filtered : state.viewBranch.filtered
+        filtered : state.viewBranch.filtered,
+        login:  state.viewBranch.login,
     }
 }
 

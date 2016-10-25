@@ -46,7 +46,7 @@ func GetEvents(owner, repo string, lastEventId *string, client *github.Client) (
 	for {
 		var events []*github.Event
 		var resp *github.Response
-		opt := &github.ListOptions{page, 100}
+		opt := &github.ListOptions{Page:page,  PerPage:100}
 		events, resp, err = client.Activity.ListRepositoryEvents(owner, repo, opt)
 		if err != nil {
 			log.Printf("error geting repository events: %v\n", err)

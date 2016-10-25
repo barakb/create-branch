@@ -4,7 +4,6 @@ import (
 	"github.com/barakb/create-branch/session"
 	"html/template"
 	"net/http"
-	"fmt"
 )
 
 type MainHandler struct {

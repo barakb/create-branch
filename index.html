@@ -40,8 +40,7 @@
 
 <script type="text/javascript">
         var sock = null;
-        var wsuri = "wss://localhost:4430/events";
-
+        var wsuri = "wss://{{.request.Host}}/events";
         window.onload = function() {
 
             console.log("onload");

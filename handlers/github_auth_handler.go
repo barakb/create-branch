@@ -6,6 +6,7 @@ import (
 	githuboauth "golang.org/x/oauth2/github"
 	"net/http"
 	"os"
+	"fmt"
 )
 
 var oauthConf = &oauth2.Config{
@@ -29,6 +30,7 @@ func (h GithubAuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if client == nil {
 		sess.Set("redirect", r.RequestURI)
 		url := oauthConf.AuthCodeURL(oauthStateString, oauth2.AccessTypeOnline)
+		fmt.Printf("github auth url is %q\n", url)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	} else {
 		h.next.ServeHTTP(w, r)

@@ -18,5 +18,5 @@ export GOPATH=/golang/create-branch
 #nvm use v5.7.1
 #npm install
 #webpack
-
+source /create-branch-conf/env.sh
 /golang/create-branch/bin/create-branch -repos /create-branch-conf/repos.txt "$*"

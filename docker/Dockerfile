@@ -42,8 +42,13 @@ RUN go build -v -o bin/create-branch github.com/barakb/create-branch/main
 
 WORKDIR /golang/create-branch/src/github.com/barakb/create-branch
 
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-ENTRYPOINT ["/golang/create-branch/serve.sh"]
+
+#ENTRYPOINT ["/golang/create-branch/serve.sh"]
+CMD ["/usr/bin/supervisord"]
 
 
 EXPOSE 4430

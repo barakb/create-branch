@@ -25,6 +25,6 @@ create a conf dir named 'conf'  with the following files:
 `barakb/foobar`
 
 
-### Runnaing
+### Running
 
 `./run-container.sh conf`

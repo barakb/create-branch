@@ -8,6 +8,7 @@ import (
 	"github.com/google/go-github/github"
 	"net/http"
 	"strings"
+	"strconv"
 )
 
 type CreateBranchHandler struct {
@@ -18,7 +19,13 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sess := session.GlobalSessions.SessionStart(w, r)
 	branchName := strings.Trim(strings.Replace(r.URL.Path, "/api/create_branch/", "", 1), "/")
 	from := r.URL.Query().Get("from")
-	fmt.Printf("creating branch %s from %s\n", branchName, from)
+	xapOnly := r.URL.Query().Get("isXAPOnly")
+	fmt.Printf("creating branch %s from %s, xapOnly: %s\n", branchName, from, xapOnly)
+	isXapOnly, err := strconv.ParseBool(xapOnly)
+	if err != nil {
+		isXapOnly = false
+	}
+
 	if strings.Contains(branchName, "/") {
 		fmt.Printf("CreateBranchHandler: wrong request: %q\n", r.RequestURI)
 		http.Error(w, fmt.Sprintf("CreateBranchHandler: wrong request: %q\n", r.RequestURI), http.StatusInternalServerError)
@@ -28,7 +35,7 @@ func (h CreateBranchHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	client := sess.Get("*github.client").(*github.Client)
 
-	progressChan, resChan := gh.CreateBranchsWithProgress(branchName, from, client)
+	progressChan, resChan := gh.CreateBranchsWithProgress(branchName, from, isXapOnly, client)
 
 	go func() {
 		for progress := range progressChan {

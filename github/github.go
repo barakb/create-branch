@@ -21,14 +21,16 @@ func (repo Repo) String() string {
 	return fmt.Sprintf("Repo{owner:%s, repo:%s, isIE:%v, sha:%s}", repo.owner, repo.repo, repo.isIE, repo.sha)
 }
 
-func createReposFromNames(names []string) []*Repo {
+func createReposFromNames(names []string, xapOnly bool) []*Repo {
 	fmt.Printf("creating repos from names %s\n", names)
 	ret := make([]*Repo, 0)
 	for _, name := range names {
 		if strings.TrimSpace(name) != "" && strings.Contains(name, "/") {
 			components := strings.Split(name, "/")
 			isIE := components[0] == "InsightEdge"
-			ret = append(ret, &Repo{owner: components[0], repo: components[1], isIE: isIE})
+			if !isIE || !xapOnly {
+				ret = append(ret, &Repo{owner: components[0], repo: components[1], isIE: isIE})
+			}
 		}
 	}
 	fmt.Printf("repos are %s\nret is %s\n", names, ret)
@@ -140,7 +142,7 @@ func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]string {
 		branch string
 	}
 	branches := make(chan branch, 100)
-	repos := createReposFromNames(ReposNames)
+	repos := createReposFromNames(ReposNames, false)
 	fmt.Printf("ReposNames are: %s\n", ReposNames)
 	var wg sync.WaitGroup
 	for _, repo := range repos {
@@ -185,12 +187,12 @@ func ListAllRefsAsMap(client *github.Client) chan map[string]map[string]string {
 }
 
 func DeleteBranchWithProgress(branch string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
-	repos := createReposFromNames(ReposNames)
+	repos := createReposFromNames(ReposNames, false)
 	return deleteBranchesWithProgress(repos, branch, client)
 }
 
-func CreateBranchsWithProgress(branch string, from string, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
-	repos := createReposFromNames(ReposNames)
+func CreateBranchsWithProgress(branch string, from string, xapOnly bool, client *github.Client) (progressChan chan RepoStatus, resChan chan map[string]interface{}) {
+	repos := createReposFromNames(ReposNames, xapOnly)
 	ch :=  fillSha(repos, from, client)
 	var existingRepos []*Repo = <- ch
 	return createBranchesWithProgress(existingRepos, branch, client)

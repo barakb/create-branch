@@ -8,11 +8,12 @@ import { CREATE_BRANCH_REQUEST,
          BRANCH_DELETED,
          TOGGLED_BRANCH_ROW,
          TOGGLE_SOURCE_BRANCH,
+         TOGGLE_CREATE_ONLY_XAP_BRANCH,
          SET_USER,
         }
  from "./actionTypes"
 
-const createBranchInitialState = {name:'', isFetching:false, fromBranch : ''};
+const createBranchInitialState = {name:'', isFetching:false, fromBranch : '', isXAPOnlyBranch:false};
 
 function createBranch (state = createBranchInitialState , action) {
    switch (action.type){
@@ -23,6 +24,10 @@ function createBranch (state = createBranchInitialState , action) {
       case TOGGLE_SOURCE_BRANCH:
            let fromBranch = state.fromBranch === action.name ? '' : action.name
            return {...state, fromBranch};
+      case TOGGLE_CREATE_ONLY_XAP_BRANCH:
+           let isXAPOnlyBranch = !state.isXAPOnlyBranch
+           console.info("TOGGLE_CREATE_ONLY_XAP_BRANCH state is ", state , " Next is ", isXAPOnlyBranch)
+           return {...state, isXAPOnlyBranch};
        default:
            return state;
    }

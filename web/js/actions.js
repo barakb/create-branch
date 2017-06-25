@@ -7,7 +7,8 @@ import { CREATE_BRANCH_REQUEST,
          BRANCH_DELETED,
          TOGGLED_BRANCH_ROW,
          TOGGLE_SOURCE_BRANCH,
-         SET_USER
+         SET_USER,
+         TOGGLE_CREATE_ONLY_XAP_BRANCH
   } from "./actionTypes"
 
 
@@ -61,7 +62,7 @@ export function branchDeleted(name) {
     return {type:BRANCH_DELETED, name};
 }
 
-export function createBranchRequest(name, from) {
+export function createBranchRequest(name, from, isXAPOnly) {
     from = !from ? "master" : from;
     return function(dispatch){
         if (!name){
@@ -69,7 +70,7 @@ export function createBranchRequest(name, from) {
         }
         const branchName = name;
         dispatch({type:CREATE_BRANCH_REQUEST, branchName});
-        fetch('/api/create_branch/' + branchName +'?from=' + encodeURIComponent(from), {
+        fetch('/api/create_branch/' + branchName +'?from=' + encodeURIComponent(from) + '&isXAPOnly=' + encodeURIComponent(isXAPOnly), {
             method: 'get',
             credentials: 'same-origin',
             cache: 'no-cache'
@@ -99,4 +100,7 @@ export function toggleRow(name){
 
 export function toggleSourceBranch(name){
     return { "type":TOGGLE_SOURCE_BRANCH, "name":name };
+}
+export function toggleXAPRequest(){
+    return { "type":TOGGLE_CREATE_ONLY_XAP_BRANCH};
 }

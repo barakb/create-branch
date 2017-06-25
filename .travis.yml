@@ -12,6 +12,6 @@ before_install:
 
 before_script:
   - glide install
-  - go vet ./main ./handlers ./github ./session
+  - go vet $(go list ./... | grep -v /vendor/)
 
-script: go test ./...
+script: go test $(go list ./... | grep -v /vendor/)

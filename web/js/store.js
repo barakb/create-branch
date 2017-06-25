@@ -42,8 +42,10 @@ const loadBranches = () => {
         store.dispatch(setUser(res.login));
         let branches = res.branches;
         let repos = res.repos;
+        let isXAPRepo = function(repo){return !repo.startsWith("InsightEdge/")};
+        let xapRepos = repos.filter(isXAPRepo);
         for (var key of Object.keys(branches)) {
-                if(Object.keys(branches[key]).length ==  repos.length){
+                if(Object.keys(branches[key]).filter(isXAPRepo).length ==  xapRepos.length){
                     store.dispatch(branchAdded(key,  branches[key], isReadOnly(branches[key], document.currentLoginName)));
                 }
         }
@@ -51,5 +53,6 @@ const loadBranches = () => {
         console.info("err is ", err)
     });
 }
+
 
 loadBranches();

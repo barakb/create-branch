@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/barakb/create-branch/session"
 	"golang.org/x/oauth2"
 	githuboauth "golang.org/x/oauth2/github"
 	"net/http"
 	"os"
-	"fmt"
 )
 
 var oauthConf = &oauth2.Config{

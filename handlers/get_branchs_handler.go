@@ -5,8 +5,8 @@ import (
 	gh "github.com/barakb/create-branch/github"
 	"github.com/barakb/create-branch/session"
 	"github.com/google/go-github/github"
-	"net/http"
 	"log"
+	"net/http"
 )
 
 type GetBranchsHandler struct {
@@ -16,8 +16,8 @@ type GetBranchsHandler struct {
 
 type Branches struct {
 	Map   map[string]map[string]string `json:"branches"`
-	Repos []string                   `json:"repos"`
-	Login string `json:"login"`
+	Repos []string                     `json:"repos"`
+	Login string                       `json:"login"`
 }
 
 func (h GetBranchsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func (h GetBranchsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	branches := <-gh.ListAllRefsAsMap(client)
 	//map[string]map[string]*BranchOwnershipEvent
 	creationEventsByRepo := <-resChan
-	log.Printf("Merging events %v\n", creationEventsByRepo);
+	log.Printf("Merging events %v\n", creationEventsByRepo)
 	for branchName, branchRepos := range branches {
 		for repoName, _ := range branchRepos {
 			if repoEvents, ok := creationEventsByRepo[repoName]; ok {
@@ -52,7 +52,7 @@ func (h GetBranchsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	js, err := json.Marshal(Branches{branches, h.Repos,  *sess.Get("user").(*github.User).Login})
+	js, err := json.Marshal(Branches{branches, h.Repos, *sess.Get("user").(*github.User).Login})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

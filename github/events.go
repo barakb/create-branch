@@ -2,12 +2,12 @@ package github
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/google/go-github/github"
 	"log"
-	"time"
 	"sort"
 	"strings"
-	"fmt"
+	"time"
 )
 
 //{"ref":"yaelna_120","ref_type":"branch","pusher_type":"user"}
@@ -26,7 +26,7 @@ type BranchOwnershipEvent struct {
 	Id          string
 }
 
-type SortByDateBranchOwnershipEvents  []*BranchOwnershipEvent
+type SortByDateBranchOwnershipEvents []*BranchOwnershipEvent
 
 func (s SortByDateBranchOwnershipEvents) Len() int {
 	return len(s)
@@ -46,7 +46,7 @@ func GetEvents(owner, repo string, lastEventId *string, client *github.Client) (
 	for {
 		var events []*github.Event
 		var resp *github.Response
-		opt := &github.ListOptions{Page:page,  PerPage:100}
+		opt := &github.ListOptions{Page: page, PerPage: 100}
 		events, resp, err = client.Activity.ListRepositoryEvents(owner, repo, opt)
 		if err != nil {
 			log.Printf("error geting repository events: %v\n", err)
@@ -83,7 +83,7 @@ func GetEvents(owner, repo string, lastEventId *string, client *github.Client) (
 		if page < resp.LastPage {
 			page = resp.NextPage
 		} else {
-			break;
+			break
 		}
 	}
 

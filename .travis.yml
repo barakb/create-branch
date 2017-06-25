@@ -12,6 +12,6 @@ before_install:
 
 before_script:
   - glide install
-  - go vet ./...
+  - go vet ./main ./handlers ./github ./session
 
 script: go test ./...

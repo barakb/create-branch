@@ -1,5 +1,7 @@
-FROM golang:1.7.1
+FROM golang:1.8.0
 MAINTAINER Barak Bar Orion  <barak.bar@gmail.com>
+
+ENV DEBIAN_FRONTEND noninteractive
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
@@ -20,8 +22,9 @@ RUN /golang/create-branch/src/github.com/barakb/create-branch/keys/gen.sh
 
 WORKDIR /golang/create-branch/src/github.com/barakb/create-branch
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
-RUN source ~/.bashrc && nvm install v5.7.1
-RUN source ~/.bashrc && nvm use v5.7.1 && npm install webpack -g && npm install && webpack
+RUN echo  ~/.bashrc
+RUN source ~/.bashrc && nvm install v8.1.2
+RUN source ~/.bashrc && nvm use v8.1.2 && npm install webpack@2.6.1 -g && npm install && webpack
 
 
 ENV GOPATH /golang/create-branch

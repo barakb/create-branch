@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"context"
 )
 
 //{"ref":"yaelna_120","ref_type":"branch","pusher_type":"user"}
@@ -47,7 +48,7 @@ func GetEvents(owner, repo string, lastEventId *string, client *github.Client) (
 		var events []*github.Event
 		var resp *github.Response
 		opt := &github.ListOptions{Page: page, PerPage: 100}
-		events, resp, err = client.Activity.ListRepositoryEvents(owner, repo, opt)
+		events, resp, err = client.Activity.ListRepositoryEvents(context.Background(), owner, repo, opt)
 		if err != nil {
 			log.Printf("error geting repository events: %v\n", err)
 			return

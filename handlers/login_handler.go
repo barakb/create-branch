@@ -6,6 +6,7 @@ import (
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
 	"net/http"
+	"context"
 )
 
 type GithubLoginHandler struct {
@@ -32,7 +33,7 @@ func (h GithubLoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	oauthClient := oauthConf.Client(oauth2.NoContext, token)
 	client := github.NewClient(oauthClient)
-	user, _, err := client.Users.Get("")
+	user, _, err := client.Users.Get(context.Background(), "")
 	if err != nil {
 		panic(err)
 	}

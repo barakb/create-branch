@@ -1,4 +1,4 @@
-FROM golang:1.8.0
+FROM golang:1.27.1
 MAINTAINER Barak Bar Orion  <barak.bar@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
